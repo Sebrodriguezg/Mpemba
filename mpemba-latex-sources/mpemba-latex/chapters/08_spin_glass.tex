@@ -1,0 +1,194 @@
+% ====================================================================
+% Capítulo 8: Vidrios de espín
+% ====================================================================
+\chapter{El efecto Mpemba en vidrios de espín como huella de memoria}
+\label{ch:spin_glass}
+
+\section{Motivación: el paisaje energético complejo}
+
+Los vidrios de espín constituyen el arquetipo de sistemas con \emph{paisaje 
+energético complejo}: un número exponencial (en el tamaño del sistema) de 
+mínimos locales metaestables, separados por barreras de altura proporcional al 
+tamaño del sistema. Esta estructura genera tiempos de relajación astronómicos 
+y fenómenos de \emph{memoria} y \emph{envejecimiento}~\cite{mezard1987}.
+
+Baity-Jesi, Calore, Cruz \emph{et al.}~\cite{baityjesi2019} demostraron en 2019 
+mediante simulaciones a escala sin precedentes que el efecto Mpemba emerge 
+naturalmente como manifestación de esta memoria estructural en la fase vítrea.
+
+\section{El modelo de Edwards-Anderson}
+
+El modelo paradigmático del vidrio de espín es el modelo de Edwards-Anderson, 
+definido sobre una red cúbica $\mathbb{Z}^d$ con $N = L^{d}$ espines $\sigma_{i} = \pm 1$:
+\begin{equation}
+    H(\bm{\sigma}; J) = -\sum_{\langle i,j \rangle} J_{ij} \sigma_{i} \sigma_{j},
+    \label{eq:edwards_anderson}
+\end{equation}
+%
+donde los acoplamientos $J_{ij}$ son variables aleatorias IID con distribución 
+Bernoulli ($\pm 1$) o gaussiana de media cero. El \emph{desorden congelado} en 
+$\{J_{ij}\}$ no evoluciona con el tiempo.
+
+\subsection{Diagrama de fases en $d = 3$}
+
+En tres dimensiones, el modelo exhibe una \emph{transición de fase de Edwards-Anderson} 
+a $T_{c} \approx 1.1$ J. Por debajo, la fase vítrea posee:
+\begin{itemize}
+\item Múltiples ``valles'' de configuración con energía idéntica pero estructura 
+microscópica diferente.
+\item Tiempos de relajación divergentes (\emph{aging}).
+\item Sensibilidad histérica a la trayectoria térmica.
+\end{itemize}
+
+\section{Dinámica de Glauber}
+
+La evolución dinámica se modela con un \emph{spin-flip} de Glauber: a cada paso 
+de tiempo Monte Carlo, un espín aleatorio $i$ se actualiza según
+\begin{equation}
+    \sigma_{i} \to -\sigma_{i} \quad \text{con probabilidad} \quad 
+    \frac{1}{1 + \exp[\beta_{b} \Delta H_{i}]},
+    \label{eq:glauber_flip}
+\end{equation}
+%
+donde $\Delta H_{i} = 2 \sigma_{i} \sum_{j} J_{ij} \sigma_{j}$ es el cambio en 
+energía. Esta dinámica satisface el balance detallado.
+
+\subsection{Múltiples paseos sincronizados}
+
+Una técnica esencial en el estudio de vidrios de espín es el \emph{multiwalker}: 
+correr múltiples copias del sistema desde diferentes condiciones iniciales pero 
+con el \emph{mismo desorden} $\{J_{ij}\}$. La diferencia entre copias permite 
+medir longitudes de coherencia espacial y temporal.
+
+\section{La simulación Janus II}
+
+Baity-Jesi \emph{et al.}~\cite{baityjesi2019} usaron el supercomputador especializado 
+\emph{Janus II}, diseñado específicamente para simulaciones de vidrios de espín 
+mediante \emph{multispin coding} sobre FPGAs. Sus simulaciones alcanzaron:
+\begin{itemize}
+\item Tamaño $L = 160$ (i.e. $N = 4.1 \times 10^{6}$ espines).
+\item Tiempo simulado $\sim 10^{11}$ pasos Monte Carlo por espín.
+\item Promedio sobre $\sim 10^{3}$ realizaciones del desorden.
+\end{itemize}
+
+\noindent Estos números equivalen a \emph{cuatro órdenes de magnitud} más de 
+tiempo simulado que las simulaciones previas.
+
+\section{Protocolo experimental computacional}
+
+Baity-Jesi \emph{et al.} realizaron el siguiente protocolo:
+\begin{enumerate}
+\item Preparan dos copias del sistema con el mismo $\{J_{ij}\}$ y diferentes 
+historias térmicas.
+\item Una copia se equilibra a $T_{1} \in [T_{c}/2, T_{c}]$ (régimen vítreo, 
+\emph{cold}).
+\item Otra copia se equilibra a $T_{2} \approx T_{c}$ (cercana a la transición, 
+\emph{hot}).
+\item Ambas se acoplan abruptamente a un baño $\Tb \ll T_{c}/2$ (quench profundo).
+\item Se mide la longitud de coherencia $\xi(t)$ y la energía interna $e(t)$ 
+durante la relajación.
+\end{enumerate}
+
+\subsection{Definición de la longitud de coherencia}
+
+La \emph{longitud de coherencia} $\xi(t)$ se define mediante la función de 
+correlación de cuatro puntos:
+\begin{equation}
+    C_4(r; t) = \frac{1}{N} \sum_{i} \overline{ \langle \sigma_i(t) \sigma_{i+r}(t) \rangle^{2} },
+    \label{eq:c4_correlation}
+\end{equation}
+%
+donde la barra denota promedio sobre el desorden y los corchetes promedio 
+térmico. La función $C_4(r; t)$ decae exponencialmente: 
+$C_4(r; t) \sim r^{-\eta} e^{-r/\xi(t)}$ a grandes $r$.
+
+\section{El resultado clave: correlación monotónica entre $\xi$ y $e$}
+
+La observación central de Baity-Jesi \emph{et al.}~\cite{baityjesi2019} es la 
+existencia de una \emph{relación monotónica} entre la longitud de coherencia 
+$\xi(t)$ y la energía interna $e(t)$ \emph{independiente de la temperatura 
+inicial} de preparación.
+
+\begin{theorem}[Curva universal $\xi(e)$]
+\label{thm:xi_e_curve}
+En la fase vítrea de Edwards-Anderson en $d = 3$, existe una función universal 
+$\xi(e)$ tal que para cualquier preparación inicial $\Tinit$ y baño $\Tb$,
+\begin{equation}
+    \xi(t) = \xi[e(t)],
+\end{equation}
+con $\xi(\cdot)$ \emph{monotónica creciente} y \emph{cóncava}.
+\end{theorem}
+
+\noindent Demostración numérica: Baity-Jesi \emph{et al.} muestran que las 
+trayectorias $(e(t), \xi(t))$ desde diferentes $\Tinit$ \emph{colapsan} sobre 
+una única curva.
+
+\section{El efecto Mpemba como consecuencia natural}
+
+La consecuencia inmediata de \cref{thm:xi_e_curve} es el efecto Mpemba:
+
+\begin{enumerate}
+\item Una preparación a $T_{1} < T_{2}$ (más fría) tiene energía inicial 
+$e(0; T_1) < e(0; T_2)$.
+\item Sin embargo, su longitud de coherencia inicial $\xi(0; T_1)$ es 
+\emph{mayor} (las correlaciones espaciales son más fuertes en el estado más 
+ordenado).
+\item Durante la relajación al baño $\Tb < T_1$, ambas trayectorias deben 
+disminuir $e$ y aumentar $\xi$.
+\item La preparación caliente ($T_2$) puede ``saltar'' por encima de la fría 
+($T_1$) en el plano $(e, \xi)$ si su mayor energía permite un crecimiento 
+\emph{más rápido} de $\xi$.
+\end{enumerate}
+
+\noindent Esto último es precisamente lo que ocurre: la preparación caliente, 
+al tener menos estructura de ramificación atrapada, puede reorganizarse más 
+eficientemente en estructuras de gran coherencia espacial. La consecuencia es 
+que $\xi_{2}(t) > \xi_{1}(t)$ para $t > t^{\ast}$, lo que se traduce en 
+$e_{2}(t) < e_{1}(t)$ (la preparación inicialmente caliente termina más cerca 
+del equilibrio).
+
+\section{Conexión con la teoría de Klich-Raz}
+
+La curva universal $\xi(e)$ es consistente con el formalismo espectral de 
+Klich-Raz: el modo lento $\lambda_2$ es esencialmente la frecuencia de 
+``reorganización del paisaje'', y su acoplamiento al estado inicial 
+($c_2$ en la notación markoviana) depende fundamentalmente de la cantidad de 
+estructura espacial ya presente. Una preparación con $\xi$ grande tiene una 
+proyección grande sobre el modo lento, mientras que una preparación con $\xi$ 
+pequeño tiene una proyección pequeña ---es decir, $c_2$ bajo y, en consecuencia, 
+posibilidad de relajación más rápida.
+
+\section{Verificación numérica simplificada en CPU}
+
+Una implementación completa de Baity-Jesi requiere el superordenador Janus II 
+o equivalente. Sin embargo, una versión reducida con $L = 16$ y dinámica de 
+Glauber estándar es suficiente para observar el efecto. El módulo 
+\texttt{mpemba\_spin\_glass} (pendiente en \texttt{Mpemba-X v2}; ver 
+\cref{ch:conclusiones}) implementaría:
+
+\begin{itemize}
+\item Inicialización con $J_{ij}$ aleatorios Bernoulli.
+\item Equilibrado de dos copias a $T_1, T_2$.
+\item Quench síncrono a $\Tb$ y registro de $e(t), \xi(t)$.
+\item Análisis de la curva universal $\xi(e)$.
+\end{itemize}
+
+\subsection{Aproximación a través del modelo REM}
+
+En el marco actual de \texttt{Mpemba-X v2}, el modelo REM con barreras 
+aleatorias del \cref{ch:mpemba_fuerte} sirve como \emph{aproximación} al vidrio 
+de espín. Aunque el REM carece de estructura espacial (longitud de coherencia 
+no definida), captura la esencia del paisaje energético complejo y reproduce 
+estadísticamente el efecto Mpemba fuerte con la fracción reportada 
+(\SI{\sim 2}{\percent}) de realizaciones favorables.
+
+\section{Implicaciones para sistemas reales: aleaciones magnéticas}
+
+Las predicciones de Baity-Jesi \emph{et al.} han sido contrastadas 
+experimentalmente con observaciones de aleaciones de magnéticas amorfas 
+(\emph{spin glasses} reales) como Cu-Mn y Fe-Au. Los datos de susceptibilidad 
+magnética muestran que un quench desde una temperatura intermedia entre $T_c$ y 
+$T_g$ (temperatura de Almeida-Thouless) resulta en una relajación a la fase 
+ordenada más rápida que un quench desde la fase fundamental. Este resultado 
+constituye la primera verificación experimental del efecto Mpemba en sistemas 
+de espín reales~\cite{baityjesi2019}.

@@ -1,0 +1,161 @@
+% ====================================================================
+% Capítulo 1: Introducción
+% ====================================================================
+\chapter{Introducción y panorama histórico}
+\label{ch:introduccion}
+
+\epigraph{\emph{``Si un fluido caliente se expone al frío, se enfría más rápido que un fluido frío.''}}
+{--- Aristóteles, \emph{Meteorología} I.12 (350 a.C.)}
+
+\section{El fenómeno en su definición operacional}
+
+Se denomina \textbf{efecto Mpemba} al fenómeno termodinámico mediante el cual un 
+sistema preparado a una temperatura inicial alta $\Th$ alcanza el equilibrio térmico 
+con un baño a temperatura $\Tb < \Th$ en un tiempo menor que un sistema idéntico 
+preparado a una temperatura inicial intermedia $\Tw$, con $\Tb < \Tw < \Th$. 
+Formalmente, sean $p(t;\Tinit)$ la distribución de probabilidad sobre el espacio de 
+estados al tiempo $t$ dado que el sistema fue preparado en equilibrio térmico a 
+$\Tinit$ y luego acoplado al baño $\Tb$, y sea $D[\cdot,\cdot]$ una función de 
+distancia al equilibrio (verificando $D[p,\pieq] \ge 0$ con igualdad si y solo si 
+$p = \pieq$). El efecto Mpemba ocurre cuando
+\begin{equation}
+    \exists\, t^{\ast} > 0 \;\text{tal que}\; 
+    D\!\left[p(t^{\ast};\Th),\pieq(\Tb)\right] 
+    < D\!\left[p(t^{\ast};\Tw),\pieq(\Tb)\right]
+    \label{eq:mpemba_def}
+\end{equation}
+y la desigualdad persiste para todo $t > t^{\ast}$~\cite{lu2017}.
+
+El término $t^{\ast}$ recibe el nombre de \emph{tiempo de cruzamiento} o 
+\emph{crossover time}. La condición \cref{eq:mpemba_def} parece contraintuitiva: si la 
+relajación térmica fuera estrictamente cuasi-estática, el sistema más caliente 
+debería pasar por todos los estados intermedios y nunca podría ``adelantar'' a un 
+sistema que partió más cerca del equilibrio. La paradoja se resuelve cuando se 
+reconoce que la dinámica no-equilibrio recorre trayectorias en el espacio de 
+probabilidades cuyo arco geodésico depende fuertemente de las amplitudes iniciales de 
+los modos de decaimiento espectral del operador de evolución temporal.
+
+\section{Notas históricas: 2350 años de observación}
+
+La afirmación de que el agua caliente puede congelarse más rápido que el agua fría 
+aparece registrada en la \emph{Meteorología} de Aristóteles, quien describe la 
+práctica de los habitantes del Ponto de exponer el agua al sol antes de hacer agujeros 
+en el hielo, con la creencia de que así se solidificaba más rápido. Francis Bacon 
+en el \emph{Novum Organum} (1620) y René Descartes en \emph{Les Météores} (1637) 
+mencionaron observaciones análogas, sin proponer mecanismo físico alguno~\cite{burridge2016, hallstadius2020}.
+
+Joseph Black, en 1775, fue el primer científico moderno en investigar el fenómeno: 
+comparó el comportamiento de muestras de agua hervida frente a muestras sin hervir y 
+observó que la eliminación de gases disueltos y la agitación mecánica modificaban 
+drásticamente la dinámica de cristalización. Sin embargo, durante casi dos siglos 
+el efecto careció de tratamiento sistemático, y fue desestimado como artefacto 
+experimental.
+
+\section{El redescubrimiento de Mpemba (1963--1969)}
+
+La denominación moderna del fenómeno proviene de un estudiante de secundaria 
+tanzano, Erasto B. Mpemba, quien en 1963 observó durante una clase de cocina que 
+una mezcla de helado preparada con leche caliente se solidificaba en el congelador 
+antes que una preparada con leche fría. Tras años de escepticismo por parte de sus 
+profesores, Mpemba colaboró con Denis G. Osborne, quien publicó en 1969 el primer 
+estudio sistemático en \emph{Physics Education}~\cite{mpemba1969}. Sus datos más 
+notables: agua inicialmente a $\SI{80}{\celsius}$ comenzó a congelarse en menos 
+de un tercio del tiempo que el agua inicialmente a $\SI{20}{\celsius}$ en condiciones 
+nominalmente idénticas.
+
+\section{El problema de la reproducibilidad y la definición rigurosa}
+
+A pesar de múltiples reportes confirmando el efecto en agua~\cite{burridge2016}, las 
+discrepancias entre experimentos plantearon una duda fundamental: \emph{¿es el 
+efecto Mpemba un fenómeno físico genuino o un artefacto de las condiciones no 
+controladas de los experimentos macroscópicos?}
+
+Burridge y Linden~\cite{burridge2016} realizaron en 2016 un meta-análisis crítico de 
+los experimentos clásicos y concluyeron que, bajo la definición estricta de 
+``condiciones idénticas'' (mismo recipiente, masa, configuración térmica, ausencia 
+de sitios de nucleación diferenciales), \emph{no existía evidencia estadísticamente 
+significativa} del efecto Mpemba en agua. Su conclusión: el efecto reportado 
+históricamente derivaba en gran medida de la varianza estocástica intrínseca a la 
+nucleación cristalina heterogénea.
+
+Esta conclusión espoleó la búsqueda de protocolos experimentales rigurosos. En 
+particular, Hallstadius y Burridge~\cite{hallstadius2020} demostraron en 2020 que 
+\emph{sí} es posible observar el efecto Mpemba de manera repetible cuando se 
+controla \emph{sistemáticamente} la asimetría de sitios de nucleación entre las 
+muestras: específicamente, lijando con papel de esmeril el interior del recipiente 
+que contiene la muestra caliente.
+
+\section{La reformulación moderna del fenómeno}
+
+A partir de 2017, la formalización matemática del efecto Mpemba en sistemas de 
+relajación markoviana ha permitido superar el debate clásico centrado exclusivamente 
+en el agua. Las contribuciones clave son:
+
+\begin{itemize}
+\item \textbf{Lu \& Raz (2017)}~\cite{lu2017}: formalizan el efecto en sistemas 
+markovianos genéricos y derivan una condición suficiente para su aparición en 
+términos del espectro de la matriz de tasas. Predicen además el \emph{efecto Mpemba 
+inverso} (calentamiento anómalo).
+\item \textbf{Klich, Raz, Hirschberg \& Vucelja (2019)}~\cite{klichraz2019}: 
+introducen el concepto de \emph{efecto Mpemba fuerte} ---la cancelación geométrica 
+del modo de decaimiento más lento--- y un índice topológico que cuenta el número 
+de tales preparaciones óptimas.
+\item \textbf{Lasanta \emph{et al.} (2017)}~\cite{lasanta2017}: prueban la 
+aparición del efecto en gases granulares mediante una formulación de momentos 
+truncada en el coeficiente de Sonine.
+\item \textbf{Kumar \& Bechhoefer (2020)}~\cite{kumar2020}: realizan la primera 
+verificación experimental \emph{controlada} del efecto Mpemba fuerte, en un 
+sistema coloidal sometido a una pinza óptica con potencial efectivo programable.
+\item \textbf{Baity-Jesi \emph{et al.} (2019)}~\cite{baityjesi2019}: muestran 
+mediante simulaciones a gran escala (Janus II) que el efecto Mpemba es una 
+manifestación robusta de la memoria estructural en vidrios de espín.
+\item \textbf{Carollo, Lasanta \& Lesanovsky (2021)}~\cite{carollo2021}: extienden 
+el formalismo al régimen cuántico abierto markoviano mediante la ecuación 
+maestra de Gorini--Kossakowski--Sudarshan--Lindblad.
+\item \textbf{Vu \& Hayakawa (2025)}~\cite{vuhayakawa2025}: unifican 
+matemáticamente el fenómeno mediante el preorden de termomayorización, 
+estableciendo una definición independiente de la métrica de distancia 
+seleccionada.
+\item \textbf{Chattopadhyay, Santos \& Misra (2026)}~\cite{chattopadhyay2026} y 
+\textbf{Li \& Yang (2026)}~\cite{liyang2026}: convierten el efecto Mpemba en un 
+recurso metrológico para termometría cuántica de no-equilibrio.
+\end{itemize}
+
+\section{Estructura de este documento}
+
+Los capítulos siguientes desarrollan cada uno de estos marcos con detalle teórico 
+y verificación numérica. La organización es:
+
+\begin{description}
+\item[Capítulo \ref{ch:debate_clasico}.] El debate experimental clásico en agua, 
+los criterios de Burridge--Linden y el protocolo de nucleación controlada.
+\item[Capítulo \ref{ch:mecanismos_agua}.] Mecanismos moleculares: enlaces de 
+hidrógeno fuertes, supersolidez de piel, hexámeros de agua y el paradigma 
+polimérico de Naserifar--Goddard.
+\item[Capítulo \ref{ch:markoviano}.] Formulación markoviana de Lu \& Raz, 
+condiciones espectrales y su versión inversa.
+\item[Capítulo \ref{ch:mpemba_fuerte}.] El efecto Mpemba fuerte, el modelo de 
+energía aleatoria (REM) y el índice topológico de Klich--Raz.
+\item[Capítulo \ref{ch:granular}.] Fluidos granulares: ecuaciones de momentos, 
+DSMC y mezclas binarias.
+\item[Capítulo \ref{ch:coloides}.] Verificación experimental en coloides 
+brownianos: efecto directo (Kumar 2020) e inverso (Kumar--Chétrite 2022).
+\item[Capítulo \ref{ch:spin_glass}.] El efecto Mpemba en vidrios de espín como 
+memoria persistente: la simulación Janus II y la correlación entre longitud de 
+coherencia y energía interna.
+\item[Capítulo \ref{ch:cuantico}.] El régimen cuántico: ecuación de Lindblad, 
+modos de Liouville, puntos excepcionales y el efecto Mpemba metrológico.
+\item[Capítulo \ref{ch:termomajorizacion}.] La unificación de Vu--Hayakawa 
+mediante el preorden de termomayorización.
+\item[Capítulo \ref{ch:metodos_numericos}.] Métodos numéricos en detalle: 
+integradores Runge--Kutta de cuarto orden, DSMC, dinámica de Langevin estocástica, 
+descomposición espectral por rotaciones de Jacobi y dinámica molecular 
+gruesa-grano.
+\item[Capítulo \ref{ch:implementacion}.] La suite \texttt{Mpemba-X v2}: 
+arquitectura del código, organización de los módulos, paralelización OpenMP y 
+MPI, y formato de los archivos de configuración.
+\item[Capítulo \ref{ch:conclusiones}.] Síntesis y direcciones futuras.
+\end{description}
+
+Las pruebas matemáticas técnicas, los \emph{listings} completos del código y las 
+demostraciones del operador de termomayorización se encuentran en los apéndices.

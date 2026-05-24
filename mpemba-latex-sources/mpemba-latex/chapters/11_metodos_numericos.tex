@@ -1,0 +1,312 @@
+% ====================================================================
+% Capítulo 11: Métodos numéricos
+% ====================================================================
+\chapter{Métodos numéricos}
+\label{ch:metodos_numericos}
+
+Este capítulo describe en detalle los algoritmos numéricos utilizados en la 
+suite \texttt{Mpemba-X v2}. Cada método se documenta con su análisis de 
+convergencia, su orden de exactitud, las consideraciones de estabilidad y su 
+implementación paralela.
+
+\section{Integración temporal de ecuaciones diferenciales ordinarias: Runge-Kutta de 4º orden}
+
+\subsection{Formulación}
+
+Para una ecuación diferencial $\dot{\vb{y}} = \vb{f}(t, \vb{y})$, el integrador 
+Runge-Kutta de cuarto orden (RK4) construye la actualización 
+$\vb{y}(t + h) = \vb{y}(t) + h \vb{\Phi}(t, \vb{y}, h)$ con:
+\begin{equation}
+\begin{aligned}
+    \vb{k}_1 &= \vb{f}(t, \vb{y}) \\
+    \vb{k}_2 &= \vb{f}(t + h/2, \vb{y} + h \vb{k}_1 / 2) \\
+    \vb{k}_3 &= \vb{f}(t + h/2, \vb{y} + h \vb{k}_2 / 2) \\
+    \vb{k}_4 &= \vb{f}(t + h, \vb{y} + h \vb{k}_3) \\
+    \vb{\Phi} &= \tfrac{1}{6}(\vb{k}_1 + 2 \vb{k}_2 + 2 \vb{k}_3 + \vb{k}_4)
+\end{aligned}
+\end{equation}
+
+\subsection{Error de truncamiento}
+
+El error global del paso es $\mathcal{O}(h^4)$. Para sistemas suaves, esta 
+exactitud es suficiente con $h \sim 10^{-3}$. RK4 es \emph{condicionalmente 
+estable}: para sistemas lineales $\dot{\vb{y}} = A \vb{y}$, la región de 
+estabilidad es el disco $|1 + h\lambda + (h\lambda)^2/2 + (h\lambda)^3/6 + (h\lambda)^4/24| \leq 1$ 
+en el plano complejo de $h \lambda_{\mathrm{eig}(A)}$.
+
+\subsection{Aplicación a la ecuación maestra markoviana}
+
+En el módulo \texttt{mpemba\_markovian}, RK4 se aplica a la ecuación
+$\dot{\vb{p}} = \vb{R} \vb{p}$, donde $\vb{R}$ es la matriz de tasas del 
+\cref{eq:master}. Cada producto $\vb{R}\vb{p}$ se realiza con OpenMP en el lazo 
+sobre las componentes de $\vb{p}$:
+\begin{lstlisting}[language=C++,caption={Multiplicación matriz-vector paralelizada}]
+void dense_matvec(const DenseMarkov& M, const double* x, double* y) {
+    int n = M.n;
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < n; ++i) {
+        double s = 0.0;
+        const double* row = &M.R[(std::size_t)i * n];
+        for (int j = 0; j < n; ++j) s += row[j] * x[j];
+        y[i] = s;
+    }
+}
+\end{lstlisting}
+
+\section{Integración estocástica: Euler-Maruyama y esquemas relacionados}
+
+\subsection{Esquema Euler-Maruyama}
+
+Para la ecuación de Langevin $\dd x = a(x) \dd t + b(x) \dd W_t$ donde $W_t$ es 
+proceso de Wiener, el esquema Euler-Maruyama da
+\begin{equation}
+    x(t + h) = x(t) + a(x(t)) h + b(x(t)) \sqrt{h} \, \eta_t, 
+    \quad \eta_t \sim \mathcal{N}(0, 1).
+    \label{eq:em_method}
+\end{equation}
+%
+Es un esquema de orden \emph{débil} 1 (en la convergencia de momentos) y orden 
+\emph{fuerte} $1/2$ (en la convergencia de trayectorias).
+
+\subsection{Condiciones de estabilidad}
+
+Para potenciales armónicos $U = \tfrac{1}{2}\omega^2 x^2$ con dinámica de 
+Langevin sobreamortiguada, el esquema EM es estable si
+\begin{equation}
+    h < \frac{2}{\omega^2}.
+\end{equation}
+%
+\noindent En el módulo \texttt{mpemba\_langevin}, $h = 5 \times 10^{-5}$ con 
+$U_0 = 6$, $h = 0.8$ asegura estabilidad y convergencia adecuada.
+
+\subsection{Generación de números aleatorios}
+
+La generación de variables normales requiere un PRNG de alta calidad y 
+\emph{thread-safe}. \texttt{Mpemba-X v2} implementa Philox-4x32-10 de 
+Salmon \emph{et al.}~\cite{salmon2011}:
+
+\begin{lstlisting}[language=C++,caption={Esqueleto del PRNG Philox}]
+struct PhiloxRNG {
+    uint64_t key, counter;
+    uint32_t buffer[4];
+    int buffer_pos = 4;
+    
+    void refill() {
+        // 10 rondas de la función de mezcla de Philox
+        // ... implementación detallada en core/philox_rng.hpp
+        counter++;
+    }
+    
+    double uniform() {
+        if (buffer_pos == 4) { refill(); buffer_pos = 0; }
+        return ldexp(buffer[buffer_pos++], -32);
+    }
+    
+    double normal() {
+        // Box-Muller
+        double u1 = uniform(), u2 = uniform();
+        return std::sqrt(-2.0 * std::log(u1)) * std::cos(2 * M_PI * u2);
+    }
+};
+\end{lstlisting}
+
+\noindent Cada hilo OpenMP recibe un PRNG con \texttt{counter} 
+deterministicamente diferente, garantizando reproducibilidad y ausencia de 
+correlación entre hilos.
+
+\section{Discretización espacial: diferencias finitas y volúmenes finitos}
+
+\subsection{Ecuación de difusión 1D con esquema explícito}
+
+El módulo \texttt{mpemba\_water\_fourier} resuelve la 
+\cref{eq:fourier_zhang}. Se discretiza el dominio en $N$ celdas de tamaño 
+$\Delta x$. Para la celda $i$ interior, la actualización es:
+\begin{equation}
+\begin{aligned}
+    q^{n}_{i-1/2} &= -\kappa_{i-1/2} \frac{\theta^{n}_{i} - \theta^{n}_{i-1}}{\Delta x}, \\
+    q^{n}_{i+1/2} &= -\kappa_{i+1/2} \frac{\theta^{n}_{i+1} - \theta^{n}_{i}}{\Delta x}, \\
+    \theta^{n+1}_{i} &= \theta^{n}_{i} + \frac{\Delta t}{\rho_{i} c_{p,i} \Delta x} 
+                       \left[q^{n}_{i-1/2} - q^{n}_{i+1/2}\right] + \cdots
+\end{aligned}
+\end{equation}
+%
+donde $\kappa_{i\pm1/2}$ es la \emph{media armónica} entre las celdas vecinas:
+\begin{equation}
+    \kappa_{i+1/2} = \frac{2 \kappa_{i} \kappa_{i+1}}{\kappa_{i} + \kappa_{i+1}}.
+\end{equation}
+
+\subsection{Condición CFL}
+
+El esquema explícito es condicionalmente estable. Para difusión pura, el límite 
+CFL es:
+\begin{equation}
+    \Delta t \leq \frac{\Delta x^2}{2 \alpha_{\max}},
+\end{equation}
+%
+con $\alpha = \kappa/(\rho c_p)$ la difusividad térmica. En presencia de 
+condición de frontera Robin con coeficiente $h$, la restricción más estricta 
+proviene de la celda de borde:
+\begin{equation}
+    \Delta t \leq \frac{0.5 \cdot \rho_0 c_{p,0} \Delta x^2}{\kappa_0 + h \Delta x}.
+    \label{eq:cfl_robin}
+\end{equation}
+%
+\noindent El módulo \texttt{mpemba\_water\_fourier} usa un \emph{sub-stepping 
+adaptativo}: dado un paso externo $\Delta t_{\mathrm{out}}$ (por ejemplo \SI{5}{\second} 
+para registro de datos), se calcula el límite CFL local $\Delta t_{\mathrm{CFL}}$ 
+y se realizan $\lceil \Delta t_{\mathrm{out}} / \Delta t_{\mathrm{CFL}} \rceil$ 
+sub-pasos.
+
+\section{Diagonalización de matrices simétricas: método de Jacobi}
+
+Para el módulo \texttt{mpemba\_klich\_raz} se requiere la diagonalización 
+completa de la matriz simétrica $\tilde{\vb{R}}$ del \cref{eq:R_tilde}. Se 
+implementa el algoritmo clásico de \emph{rotaciones de Jacobi}~\cite{golub2013}.
+
+\subsection{Algoritmo}
+
+Dada una matriz simétrica $A \in \mathbb{R}^{n \times n}$:
+\begin{enumerate}
+\item Encontrar el par $(p, q)$ con $\abs{A_{pq}}$ máximo fuera de la diagonal.
+\item Calcular el ángulo de rotación $\theta$ tal que la transformación de 
+Givens $G(p, q, \theta)$ anule $A_{pq}$:
+\begin{equation}
+    \tan(2\theta) = \frac{2 A_{pq}}{A_{qq} - A_{pp}}.
+\end{equation}
+\item Actualizar $A \leftarrow G^{\top} A G$ y el acumulador de vectores 
+propios $V \leftarrow V G$.
+\item Repetir hasta que la norma de Frobenius de la parte fuera de la diagonal 
+sea menor que una tolerancia $\epsilon$.
+\end{enumerate}
+
+\subsection{Complejidad y convergencia}
+
+El método tiene complejidad $\mathcal{O}(n^3)$ por barrido completo y converge 
+cuadráticamente cerca de la convergencia. Para los tamaños usados en 
+Klich-Raz ($n = L = 10$ a $14$), el costo total es del orden de $10^{-3}$ 
+segundos por realización.
+
+\section{Direct Simulation Monte Carlo (DSMC) para gases granulares}
+
+El módulo \texttt{mpemba\_granular\_dsmc} implementa el método DSMC clásico de 
+Bird~\cite{bird1994} para simular un gas granular inelástico homogéneo.
+
+\subsection{Algoritmo NTC (No-Time Counter)}
+
+A cada paso de tiempo $\Delta t$:
+\begin{enumerate}
+\item Avance balístico: $\vb{r}_i \to \vb{r}_i + \vb{v}_i \Delta t$ (en sistemas 
+homogéneos sin gradientes, este paso es trivial).
+\item Selección de pares de colisión: número de pares candidatos
+\begin{equation}
+    N_{\mathrm{pairs}} = \frac{N (N-1)}{2} \sigma_T \langle \abs{\vb{v}_{\mathrm{rel}}} \rangle_{\max} \frac{\Delta t}{V},
+\end{equation}
+donde $\sigma_T = \pi (2a)^2$ es la sección eficaz total y $V$ el volumen.
+\item Para cada par candidato $(i, j)$: aceptar con probabilidad
+\begin{equation}
+    P_{\mathrm{accept}} = \frac{\abs{\vb{v}_i - \vb{v}_j}}{\langle \abs{\vb{v}_{\mathrm{rel}}} \rangle_{\max}}.
+\end{equation}
+\item Para pares aceptados: aplicar la regla inelástica de \cref{eq:inelastic_collision}.
+\end{enumerate}
+
+\subsection{Paralelización OpenMP de DSMC}
+
+La paralelización es no trivial porque las colisiones potencialmente involucran 
+pares globales. La estrategia de \texttt{Mpemba-X v2} divide el sistema en 
+\emph{sub-celdas} espaciales (aunque homogéneo, esto es una conveniencia 
+algorítmica) y procesa pares dentro de cada sub-celda en paralelo. Para 
+sistemas pequeños ($N \leq 10^4$), se usa la implementación serial.
+
+\section{Dinámica molecular: Velocity-Verlet y termostato de Berendsen}
+
+\subsection{Velocity-Verlet}
+
+Para un sistema de $N$ partículas con masas $m_i$ y fuerzas $\vb{F}_i$, el 
+integrador Velocity-Verlet es:
+\begin{equation}
+\begin{aligned}
+    \vb{v}_i(t + h/2) &= \vb{v}_i(t) + \frac{h}{2} \vb{F}_i(t)/m_i, \\
+    \vb{r}_i(t + h) &= \vb{r}_i(t) + h \, \vb{v}_i(t + h/2), \\
+    \vb{F}_i(t + h) &= \text{recalcular en } \vb{r}_i(t+h), \\
+    \vb{v}_i(t + h) &= \vb{v}_i(t + h/2) + \frac{h}{2} \vb{F}_i(t+h)/m_i.
+\end{aligned}
+\end{equation}
+%
+El esquema es simpléctico, conserva energía hasta orden $\mathcal{O}(h^2)$ y 
+es estable para $h < 2/\omega_{\max}$ donde $\omega_{\max}$ es la frecuencia 
+más alta del sistema.
+
+\subsection{Termostato de Berendsen}
+
+Para mantener un ensemble $NVT$ se acopla un \emph{termostato de 
+Berendsen}~\cite{berendsen1984} que reescala las velocidades:
+\begin{equation}
+    \vb{v}_i \to \vb{v}_i \cdot \lambda(T_{\mathrm{cur}}), 
+    \qquad \lambda = \sqrt{1 + \frac{h}{\tau_T}\left(\frac{T_{\mathrm{target}}}{T_{\mathrm{cur}}} - 1\right)},
+\end{equation}
+%
+donde $\tau_T$ es la constante temporal del termostato (típicamente 
+$\tau_T \sim 100 h$). Este termostato no genera el ensemble $NVT$ canónico 
+exactamente (no satisface el balance detallado), pero es robusto y simple, 
+adecuado para simulaciones de \emph{quench}.
+
+\subsection{Potencial mW para agua}
+
+El módulo \texttt{mpemba\_water\_md} usa el potencial mW (\emph{monatomic 
+Water}) de Molinero \& Moore~\cite{molinero2009}, un Stillinger-Weber tetraédrico:
+\begin{equation}
+    U = \sum_{i,j} \phi_2(r_{ij}) + \sum_{i,j,k} \phi_3(r_{ij}, r_{ik}, \theta_{ijk}),
+\end{equation}
+%
+con
+\begin{align}
+    \phi_2(r) &= A \epsilon \left[B \left(\frac{\sigma}{r}\right)^4 - 1\right] \exp\!\left[\frac{\sigma}{r - a \sigma}\right], \\
+    \phi_3(r_1, r_2, \theta) &= \lambda \epsilon \left[\cos\theta - \cos\theta_0\right]^2 
+    \exp\!\left[\frac{\gamma \sigma}{r_1 - a \sigma}\right] \exp\!\left[\frac{\gamma \sigma}{r_2 - a \sigma}\right],
+\end{align}
+%
+con parámetros estándar $\sigma = \SI{2.3925}{\angstrom}$, 
+$\epsilon = \SI{6.189}{\kilo\calorie\per\mole}$, $A = 7.0496$, $B = 0.6022$, 
+$\gamma = 1.2$, $\lambda = 23.15$, $\theta_0 = 109.47°$.
+
+\subsection{Implementación}
+
+La implementación actual de \texttt{Mpemba-X v2} usa solo la parte 2-body de 
+mW (la parte 3-body se omite para reducir el costo computacional al precio 
+de una pérdida de fidelidad en la estructura tetraédrica). Para producción 
+quantitativa se recomienda LAMMPS con mW completo.
+
+\section{Paralelización híbrida OpenMP + MPI}
+
+\subsection{Distribución MPI}
+
+\texttt{Mpemba-X v2} usa MPI para distribuir trabajo entre nodos o procesos 
+independientes. Patrones típicos:
+
+\begin{itemize}
+\item \textbf{Distribución de temperaturas iniciales}: cada rank ejecuta los 
+quenches de un subconjunto de los $\Tinit$ del barrido. No requiere 
+comunicación durante la simulación.
+\item \textbf{Distribución de trayectorias estocásticas}: cada rank simula 
+$N_{\mathrm{traj}}/k$ trayectorias independientes. La agregación final del 
+histograma se realiza con \texttt{MPI\_Allreduce}.
+\item \textbf{Distribución de realizaciones del desorden}: para Klich-Raz, 
+cada rank procesa $N_{\mathrm{realiz}}/k$ realizaciones del modelo REM.
+\end{itemize}
+
+\subsection{Paralelización OpenMP intra-rank}
+
+Dentro de cada rank MPI, OpenMP paraleliza los lazos críticos:
+\begin{itemize}
+\item Producto matriz-vector $\vb{R} \vb{p}$ en la ecuación maestra.
+\item Lazo sobre trayectorias Langevin.
+\item Lazo sobre pares de fuerzas en MD.
+\end{itemize}
+%
+La cantidad de hilos por rank se configura mediante 
+\texttt{OMP\_NUM\_THREADS}. Configuraciones típicas:
+\begin{itemize}
+\item Laptop (4 cores): 2 ranks $\times$ 2 hilos.
+\item Workstation (16 cores): 4 ranks $\times$ 4 hilos.
+\item Cluster (nodos de 32 cores): 8 ranks $\times$ 4 hilos por nodo.
+\end{itemize}

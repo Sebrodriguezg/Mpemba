@@ -1,0 +1,174 @@
+% ====================================================================
+% Capítulo 2: El debate experimental clásico
+% ====================================================================
+\chapter{El debate experimental clásico: del agua hirviendo al sitio de nucleación controlado}
+\label{ch:debate_clasico}
+
+\section{La experiencia primigenia de Mpemba y Osborne (1969)}
+
+Mpemba y Osborne~\cite{mpemba1969} realizaron una secuencia de experimentos con dos 
+muestras de líquido en vasos abiertos colocados simultáneamente en un congelador 
+doméstico. Sus protocolos exploraron tres variables independientes:
+\begin{enumerate}
+\item Temperatura inicial $\Tinit$ de la muestra.
+\item Pureza y composición (agua destilada, leche, agua del grifo).
+\item Material y geometría del recipiente.
+\end{enumerate}
+
+\noindent Sus observaciones, replicadas en \SI{50}{} pares de experimentos, mostraron 
+que el agua inicialmente a $\SI{80}{\celsius}$ comenzaba a formar cristales en 
+$\SI{30}{\minute}$ aproximadamente, mientras que el agua inicialmente a 
+$\SI{20}{\celsius}$ requería $\SI{100}{\minute}$. La métrica empleada fue el 
+\emph{tiempo de comienzo de la cristalización}, definido por la formación de la 
+primera capa visible de hielo en la superficie superior del líquido.
+
+\section{Problemas epistemológicos de la definición clásica}
+
+La definición operacional de Mpemba--Osborne sufre tres limitaciones que han 
+contaminado más de cinco décadas de debate experimental~\cite{burridge2016}:
+
+\begin{enumerate}
+\item \textbf{Métrica subjetiva.} El ``comienzo de la cristalización'' es difícil 
+de detectar de manera reproducible: depende de la iluminación, el tamaño de los 
+cristales detectables y la presencia de núcleos heterogéneos en la pared del 
+recipiente.
+\item \textbf{Estocasticidad de la nucleación.} La cristalización del agua a 
+$\SI{0}{\celsius}$ es un proceso estocástico que requiere superar una barrera 
+energética de Helmholtz para formar un núcleo crítico. La distribución de 
+tiempos de espera es exponencial, con varianza comparable a la media. Esto 
+implica que las muestras pueden permanecer en estado sobreenfriado a 
+$\SI{-10}{\celsius}$ durante decenas de minutos antes de cristalizar.
+\item \textbf{Confusión entre enfriamiento y congelación.} El proceso global 
+incluye dos etapas: (a) enfriamiento del líquido desde $\Tinit$ hasta el punto 
+de fusión y eventual sobreenfriamiento, y (b) liberación del calor latente 
+durante la cristalización. El efecto reportado puede deberse a cualquiera de 
+las dos por separado.
+\end{enumerate}
+
+\section{El análisis crítico de Burridge y Linden (2016)}
+
+Burridge y Linden~\cite{burridge2016} propusieron una redefinición rigurosa:
+
+\begin{definition}[Efecto Mpemba estricto, Burridge--Linden 2016]
+\label{def:mpemba_burridge}
+Sean dos muestras de igual masa, igual recipiente y baño térmico común. Sean 
+$E_{H}$ y $E_{C}$ las entalpías específicas requeridas para enfriar y congelar 
+las muestras inicialmente caliente y fría desde sus condiciones iniciales hasta 
+un estado final común. Sean $Q_{H} = E_{H}/t_{H}$ y $Q_{C} = E_{C}/t_{C}$ las 
+tasas medias de transferencia de calor durante el proceso. El efecto Mpemba 
+se considera observado si
+\begin{equation}
+    \frac{Q_{H}}{Q_{C}} > \frac{E_{H}}{E_{C}}.
+    \label{eq:burridge_criterion}
+\end{equation}
+\end{definition}
+
+\noindent Esta condición es equivalente a $t_{C} > t_{H}$, es decir, el tiempo de 
+congelación completa de la muestra fría supera al de la caliente. La 
+\cref{eq:burridge_criterion} se denomina la \emph{línea de Mpemba}.
+
+Aplicando esta condición a los datos disponibles, Burridge y Linden concluyeron 
+en 2016: \emph{``el efecto Mpemba no es observable en agua de manera 
+estadísticamente significativa''.} Esta conclusión fue, sin duda, una llamada de 
+atención para la comunidad: los reportes positivos del efecto se atribuyeron a 
+sesgo de selección de datos, varianza de la nucleación o diferencias incontroladas 
+en las condiciones iniciales.
+
+\section{La rehabilitación experimental: Hallstadius y Burridge (2020)}
+
+Tras el escepticismo de 2016, los mismos autores buscaron condiciones 
+experimentales en las que el efecto pudiera reproducirse de manera 
+sistemática~\cite{hallstadius2020}. Su hipótesis fue que el cuello de botella en 
+la observación del efecto Mpemba no es la fase de enfriamiento del líquido, sino 
+la fase de nucleación: una muestra que comienza a congelarse 
+\emph{deterministamente} antes que otra disipará el calor latente antes y 
+alcanzará el estado final de hielo primero.
+
+El protocolo propuesto consistió en introducir asimetría \emph{sistemática} en la 
+densidad de sitios de nucleación heterogéneos:
+
+\begin{itemize}
+\item Recipiente A (muestra inicialmente caliente): pared interior lijada con 
+papel de esmeril P\SI{60}{} (rugosidad alta).
+\item Recipiente B (muestra inicialmente fría): pared interior lisa, idéntica en 
+geometría exterior, material y volumen.
+\end{itemize}
+
+\noindent Con este protocolo, en 12 pares de experimentos con muestras de 
+\SI{200}{\milli\liter} de agua deionizada:
+
+\begin{itemize}
+\item La muestra inicialmente caliente cristalizó antes en \SI{11}{} de las 12 
+parejas (probabilidad de hipótesis nula $p < 0.005$).
+\item Se cumplió la condición de Burridge--Linden estricta 
+(\cref{eq:burridge_criterion}) con $\Delta T_{0} = T_{H} - T_{C}$ tan grande como 
+\SI{50}{\celsius}, correspondiente a una diferencia de entalpía 
+$E_{H}/E_{C} \approx 1.5$.
+\end{itemize}
+
+\noindent La conclusión: el efecto Mpemba es real, pero \emph{condicionado} a la 
+existencia de asimetrías en la cinética de nucleación.
+
+\section{Mecanismos microscópicos propuestos en la literatura clásica}
+
+Antes de la formulación markoviana de 2017, los mecanismos propuestos para el 
+efecto Mpemba en agua incluían~\cite{burridge2016, hallstadius2020}:
+
+\begin{enumerate}
+\item \textbf{Evaporación}. El agua caliente pierde más masa por evaporación, 
+reduciendo la masa que debe ser enfriada. Modelos cuantitativos predicen una 
+contribución del 1--5\%, insuficiente para explicar las observaciones reportadas.
+\item \textbf{Convección térmica}. Gradientes de densidad en el agua caliente 
+generan convección que acelera el transporte de calor. Vynnycky y Maeno 
+estimaron que esto contribuye en menos del 10\%~\cite{burridge2016}.
+\item \textbf{Gases disueltos}. La solubilidad del aire en agua disminuye con la 
+temperatura. El agua caliente contiene menos gas disuelto, lo que altera la 
+cinética de cristalización heterogénea.
+\item \textbf{Sobreenfriamiento diferencial}. El agua fría tiende a sobreenfriarse 
+más profundamente antes de cristalizar, retrasando la liberación de calor 
+latente.
+\item \textbf{Memoria de enlaces de hidrógeno y supersolidez de piel}: el modelo 
+de Zhang \emph{et al.}~\cite{zhang2014}, que se desarrolla en el 
+\cref{ch:mecanismos_agua}.
+\end{enumerate}
+
+\section{Implicaciones para la teoría general}
+
+El debate experimental clásico llevó a una bifurcación en la literatura:
+
+\begin{enumerate}
+\item Por un lado, los \emph{mecanicistas del agua}, que buscan en la estructura 
+molecular de $\mathrm{H_2O}$ y sus enlaces de hidrógeno la explicación 
+material del efecto.
+\item Por otro lado, los \emph{formalistas markovianos}, quienes asumen que el 
+efecto es genérico de los sistemas de no-equilibrio markovianos y prescinden de 
+los detalles del medio.
+\end{enumerate}
+
+\noindent Ambos enfoques son válidos y complementarios. El presente documento los 
+trata por separado en los \cref{ch:mecanismos_agua,ch:markoviano}, respectivamente, 
+y los unifica en la perspectiva de termomayorización del 
+\cref{ch:termomajorizacion}.
+
+\begin{table}[h]
+\centering
+\caption{Resumen cronológico de los hitos experimentales clásicos en el debate del 
+efecto Mpemba en agua.}
+\label{tab:historial_experimental}
+\small
+\begin{tabularx}{\textwidth}{lll>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Año} & \textbf{Autores} & \textbf{Publicación} & \textbf{Contribución} \\
+\midrule
+350 a.C. & Aristóteles & Meteorología & Primera observación documentada \\
+1620 & F. Bacon & Novum Organum & Confirmación cualitativa \\
+1637 & R. Descartes & Les Météores & Confirmación cualitativa \\
+1775 & J. Black & Edinburgh Trans. & Primer estudio sistemático \\
+1969 & E. B. Mpemba, D. G. Osborne & Phys. Educ. \textbf{4}, 172 & Redescubrimiento moderno \\
+1995 & D. Auerbach & Am. J. Phys. \textbf{63}, 882 & Rol del sobreenfriamiento \\
+2009 & J. I. Katz & Am. J. Phys. \textbf{77}, 27 & Mecanismo de solutos \\
+2016 & H. C. Burridge, P. F. Linden & Sci. Rep. \textbf{6}, 37665 & Análisis crítico, definición rigurosa \\
+2020 & O. Hallstadius, H. C. Burridge & Proc. R. Soc. A \textbf{476}, 20190829 & Reproducibilidad por nucleación controlada \\
+\bottomrule
+\end{tabularx}
+\end{table}

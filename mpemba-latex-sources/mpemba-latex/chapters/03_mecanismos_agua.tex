@@ -1,0 +1,262 @@
+% ====================================================================
+% Capítulo 3: Mecanismos estructurales en agua líquida
+% ====================================================================
+\chapter{Mecanismos estructurales en agua líquida: enlaces de hidrógeno y supersolidez}
+\label{ch:mecanismos_agua}
+
+\section{El paradigma de Zhang \emph{et al.}: memoria de enlaces de hidrógeno y supersolidez de piel}
+
+Zhang \emph{et al.}~\cite{zhang2014} propusieron una explicación cuantitativa del 
+efecto Mpemba basada en dos fenómenos íntimamente acoplados:
+
+\begin{enumerate}
+\item La \textbf{memoria de los enlaces de hidrógeno} ($\mathrm{O:H{-}O}$): el 
+intervalo entre el átomo de oxígeno donador y el aceptor posee una dinámica 
+relajacional cuyo tiempo característico depende fuertemente de la temperatura 
+inicial $\Tinit$ de la cual fue templada la muestra.
+\item La \textbf{supersolidez de piel del agua}: la región superficial 
+(\SIrange{1}{2}{\milli\meter} de espesor) posee densidad reducida y conductividad 
+térmica aumentada respecto al volumen, modificando localmente el campo de 
+temperatura.
+\end{enumerate}
+
+\subsection{Estructura del enlace $\mathrm{O:H{-}O}$ y sus dos componentes}
+
+A diferencia de modelos clásicos que representan el enlace de hidrógeno como un 
+contacto único, Zhang \emph{et al.} lo descomponen en dos sub-enlaces:
+
+\begin{itemize}
+\item Un \textbf{enlace covalente $\mathrm{H{-}O}$} de \SI{0.1}{\nano\meter} y 
+energía $E_{H} \sim \SI{4.0}{\electronvolt}$.
+\item Un \textbf{no-enlace electrostático $\mathrm{O{:}H}$} de 
+\SI{0.18}{\nano\meter} y energía $E_{L} \sim \SI{0.1}{\electronvolt}$.
+\end{itemize}
+
+\noindent Ambos están \emph{acoplados} por la repulsión Coulombiana entre los 
+electrones del oxígeno (\textit{Coulomb repulsion}, C-repulsion): cualquier cambio 
+en $d_{\mathrm{H{-}O}}$ induce un cambio en $d_{\mathrm{O{:}H}}$ en sentido 
+opuesto. Esto da al sistema una \emph{histéresis} interna que actúa como memoria 
+térmica.
+
+Bajo calentamiento, $d_{\mathrm{H{-}O}}$ se acorta (anómalamente) y 
+$d_{\mathrm{O{:}H}}$ se alarga; durante el enfriamiento ocurre lo opuesto, pero 
+con una constante temporal $\tau_{\mathrm{HB}}$ que depende de la historia térmica.
+
+\subsection{Ecuación de Fourier modificada}
+
+El modelo de Zhang \emph{et al.} discretiza el agua en una columna 
+unidimensional de longitud $L$ y resuelve la ecuación de Fourier:
+
+\begin{equation}
+    \rho(\theta) \, c_{p}(\theta) \, \pdv{\theta}{t} 
+    = \pdv{x} \left[ \kappa(\theta,x) \pdv{\theta}{x} \right] 
+    - \rho c_{p} v_{x}(x) \, \pdv{\theta}{x} 
+    + q_{\mathrm{mem}}(x,t),
+    \label{eq:fourier_zhang}
+\end{equation}
+%
+donde $\theta$ es la temperatura (en \si{\celsius}), $\rho$, $c_{p}$ y $\kappa$ 
+son funciones del campo local de temperatura, $v_{x}$ es la velocidad 
+convectiva y $q_{\mathrm{mem}}$ representa la fuente/sumidero térmico asociado a 
+la relajación de la memoria de los enlaces de hidrógeno:
+\begin{equation}
+    q_{\mathrm{mem}}(x,t) = C_{\mathrm{mem}} \, \dv{d_{\mathrm{OH}}}{t}, 
+    \qquad
+    \dv{d_{\mathrm{OH}}}{t} = - \frac{d_{\mathrm{OH}} - d_{\mathrm{OH}}^{\mathrm{eq}}(\theta)}{\tau_{\mathrm{HB}}(\Tinit)},
+    \label{eq:hb_memory}
+\end{equation}
+%
+con tiempo característico
+\begin{equation}
+    \tau_{\mathrm{HB}}(\Tinit) = \tau_{0} \, \exp\!\left[-\frac{\Tinit - \theta_{0}}{T_{\mathrm{scale}}}\right].
+    \label{eq:tau_hb}
+\end{equation}
+%
+La \emph{decreciente} dependencia $\tau_{\mathrm{HB}}(\Tinit) \downarrow$ con 
+$\Tinit \uparrow$ implica que el agua más caliente \emph{libera su memoria más 
+rápido} al ser puesta en contacto con el baño frío. Es esta asimetría la que 
+genera, en el modelo de Zhang, la disipación más eficiente de la entalpía total 
+desde la muestra inicialmente caliente.
+
+\subsection{Supersolidez de piel}
+
+La hipótesis adicional ---ya documentada por Zhang en trabajos previos--- es que 
+la región superficial del agua, donde las moléculas tienen coordinación 
+incompleta, exhibe propiedades de \emph{supersólido}: 
+
+\begin{itemize}
+\item Densidad reducida: $\rho_{\mathrm{skin}}/\rho_{\mathrm{bulk}} \approx 0.75$.
+\item Conductividad térmica aumentada: $\kappa_{\mathrm{skin}}/\kappa_{\mathrm{bulk}} \approx 4/3$.
+\item Frecuencia fonónica O--H alta ($\sim \SI{3450}{\per\centi\meter}$, frente a 
+$\SI{3200}{\per\centi\meter}$ en el bulk).
+\end{itemize}
+
+\noindent Esta capa actúa como un \emph{drenaje térmico} preferente para la 
+disipación de calor durante el enfriamiento. La \cref{eq:fourier_zhang} debe 
+resolverse con condiciones de frontera de tipo Robin en la interfase 
+piel-ambiente:
+\begin{equation}
+    h_{\mathrm{drain}} \left[\theta(0,t) - \theta_{\mathrm{bath}}\right] 
+    = \kappa_{\mathrm{skin}} \pdv{\theta}{x}\bigg|_{x=0}.
+    \label{eq:robin_bc}
+\end{equation}
+
+\section{Mecanismos microscópicos: el modelo de Jin y Goddard (2015)}
+
+Mientras Zhang \emph{et al.} trabajan a nivel macroscópico (campo $\theta(x,t)$), 
+Jin y Goddard~\cite{jin_goddard2015} investigaron el origen molecular del efecto 
+mediante simulaciones de dinámica molecular clásica.
+
+\subsection{Protocolo de quench}
+
+Sus simulaciones usaron tres modelos de campo de fuerzas:
+\begin{enumerate}
+\item \textbf{mW} (Molinero-Moore): un átomo único por molécula, potencial 
+Stillinger-Weber con función angular tetraédrica.
+\item \textbf{SPC}: agua rígida con tres sitios de carga.
+\item \textbf{F3C}: agua flexible con enlaces $\mathrm{O{-}H}$ ajustables.
+\end{enumerate}
+
+\noindent Para 192, 300 y 1000 moléculas de agua, se realizaron simulaciones de 
+\emph{enfriamiento súbito} (\emph{quench}) desde dos temperaturas iniciales 
+$\Tinit \in \{300, 370, 450\}$~\si{\kelvin} hasta $T_{\mathrm{bath}} = \SI{100}{\kelvin}$ 
+(estado vidrioso).
+
+\subsection{Resultados clave: el papel del hexámero}
+
+Tras el quench, se midió la \emph{densidad de estados vibracionales} (DOS) en el 
+rango de baja frecuencia $\nu \in [80, 160]\;\si{\per\centi\meter}$. Las 
+observaciones fueron:
+
+\begin{enumerate}
+\item El agua templada desde $\Tinit \geq \SI{370}{\kelvin}$ presenta una DOS en 
+este rango \emph{más cercana a la del hielo} que la templada desde $\Tinit \leq \SI{300}{\kelvin}$.
+\item Este rango de frecuencias corresponde a las vibraciones colectivas del 
+\emph{armazón} del \textbf{hexámero de agua} ---el complejo cíclico de seis 
+moléculas--- considerado el núcleo cristalino primigenio para la formación de 
+hielo $\mathrm{I_h}$.
+\item La \emph{población} de hexámeros en agua a $\SI{370}{\kelvin}$ supera a la 
+de agua a $\SI{300}{\kelvin}$.
+\end{enumerate}
+
+\noindent La conclusión: \emph{una mayor población de núcleos cristalinos 
+pre-existentes en el agua caliente acelera drásticamente la transición de fase 
+hacia el hielo durante el quench.} Esta es la interpretación moderna ``estructural'' 
+del efecto Mpemba.
+
+\subsection{Verificación por congelamiento de hexámero fijo}
+
+Jin y Goddard realizaron además un experimento computacional decisivo: 
+\emph{fijaron} las posiciones de las moléculas de un hexámero individual durante 
+el quench desde $\SI{370}{\kelvin}$. El resultado: la correlación estructural con 
+el hielo $\mathrm{I_h}$ después del quench fue \emph{mayor} que sin la 
+restricción. Esto confirma que el hexámero actúa como un núcleo de cristalización.
+
+\section{El paradigma polimérico de Naserifar y Goddard (2019)}
+
+Naserifar y Goddard~\cite{naserifar2019} extendieron radicalmente el paradigma 
+mediante simulaciones con un campo de fuerzas \emph{ab initio} de alta precisión 
+(RexPoN), parametrizado contra CCSD(T) para los enlaces $\mathrm{O{-}H}$ y DFT 
+para las interacciones de largo alcance.
+
+\subsection{El descubrimiento: agua como polímero dinámico ramificado}
+
+A diferencia del paradigma tradicional donde cada molécula de $\mathrm{H_2O}$ 
+forma cuatro enlaces de hidrógeno fuertes (SHB, \emph{strong hydrogen bonds}, 
+$r_{OO} \leq \SI{2.93}{\angstrom}$), las simulaciones RexPoN revelaron que:
+
+\begin{itemize}
+\item En el hielo: $\langle N_{\mathrm{SHB}} \rangle = 4.0$ (consistente con la 
+estructura tetraédrica).
+\item En el agua líquida a $\SI{273.5}{\kelvin}$ (recién fundida): 
+$\langle N_{\mathrm{SHB}} \rangle$ \emph{cae abruptamente a 2.3}.
+\item A $\SI{298}{\kelvin}$: $\langle N_{\mathrm{SHB}} \rangle = 2.1$.
+\item A $\SI{400}{\kelvin}$: $\langle N_{\mathrm{SHB}} \rangle = 1.6$.
+\end{itemize}
+
+\noindent Esta caída implica que el agua líquida no es una ``red tetraédrica 
+desordenada'' sino un \emph{conjunto de cadenas poliméricas ramificadas} en las 
+que la mayoría de moléculas forma solo dos enlaces SHB.
+
+\subsection{Estructura de la cadena polimérica}
+
+A $\SI{298}{\kelvin}$, la cadena más larga contiene en promedio 
+$\sim 151$ moléculas, organizadas en una topología ramificada con:
+
+\begin{itemize}
+\item Una \emph{columna vertebral} (\emph{backbone}) de \SIrange{30}{40}{} 
+moléculas.
+\item Múltiples ramas laterales de \SIrange{10}{20}{} moléculas.
+\item Puntos terminales con un solo SHB.
+\item Puntos de ramificación con tres SHB.
+\end{itemize}
+
+\noindent El tiempo de vida de un enlace SHB a $\SI{298}{\kelvin}$ es 
+$\tau_{\mathrm{SHB}} = \SI{90.3}{\femto\second}$ ---aproximadamente 11 periodos 
+de la vibración $\mathrm{O{-}H}$. Esto significa que la red polimérica se 
+reconfigura constantemente, manteniendo coherencia estadística pero perdiendo 
+identidad atómica en una escala de femtosegundos.
+
+\subsection{Transición vítrea a 227 K}
+
+El paradigma polimérico ofrece una interpretación natural del \emph{punto 
+crítico del agua sobreenfriada} a $\SI{227}{\kelvin}$. Las simulaciones de 
+Naserifar--Goddard predicen un salto del 15\% en $\tau_{\mathrm{SHB}}$ al cruzar 
+esta temperatura. La interpretación: la transición no es de líquido-líquido sino 
+de \emph{una transición vítrea de la red polimérica}.
+
+\subsection{Conexión con el efecto Mpemba: el quench polimérico}
+
+Naserifar y Goddard especulan~\cite{naserifar2019} que la diferencia entre el 
+enfriamiento desde \SI{373}{\kelvin} y \SI{298}{\kelvin} se debe a las 
+\emph{diferentes topologías de la red polimérica}:
+
+\begin{itemize}
+\item A $\SI{373}{\kelvin}$: cadenas cortas, $\langle N_{\mathrm{SHB}} \rangle = 1.7$, 
+muchos núcleos potenciales para reorganización.
+\item A $\SI{298}{\kelvin}$: cadenas largas (\SI{151}{} moléculas), atrapamiento 
+en mínimos locales del paisaje energético.
+\end{itemize}
+
+\noindent Esta interpretación es consistente con la observación de 
+Jin--Goddard~\cite{jin_goddard2015}: el agua caliente tiene mayor población de 
+hexámeros porque sus cadenas más cortas se reconfiguran fácilmente en estructuras 
+cíclicas, mientras que las cadenas largas del agua a temperatura ambiente quedan 
+atrapadas en configuraciones extendidas que dificultan la cristalización.
+
+\section{Síntesis del marco molecular}
+
+Los tres marcos discutidos en este capítulo se complementan:
+
+\begin{enumerate}
+\item \textbf{Zhang \emph{et al.} 2014} aporta el modelo macroscópico de Fourier 
+con memoria de hidrógeno y supersolidez de piel.
+\item \textbf{Jin--Goddard 2015} identifica el hexámero de agua como núcleo 
+microscópico y demuestra su mayor población en agua caliente.
+\item \textbf{Naserifar--Goddard 2019} reemplaza la imagen tradicional de la red 
+tetraédrica por una de polímeros ramificados dinámicos, y conecta la dinámica 
+$\tau_{\mathrm{HB}}$ con el punto crítico del agua sobreenfriada.
+\end{enumerate}
+
+\noindent En el \cref{ch:implementacion} se describe cómo estos tres marcos están 
+materializados en los módulos \texttt{water\_fourier} y \texttt{water\_md} de la 
+suite \texttt{Mpemba-X v2}.
+
+\begin{table}[h]
+\centering
+\caption{Parámetros del modelo molecular para el agua líquida según diferentes campos de fuerzas, comparados con valores experimentales.}
+\label{tab:agua_params}
+\small
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Propiedad} & \textbf{Exp.} & \textbf{TIP4P} & \textbf{mW} & \textbf{RexPoN} \\
+\midrule
+$T_{\mathrm{melt}}$ [\si{\kelvin}] & 273.15 & 232 & 274 & 273.3 \\
+$\rho(\SI{298}{\kelvin})$ [\si{\gram\per\cubic\centi\meter}] & 0.997 & 0.999 & 0.994 & 0.997 \\
+$\Delta H_{\mathrm{vap}}$ [\si{\kilo\calorie\per\mole}] & 10.52 & 10.65 & 11.05 & 10.36 \\
+Entropía [\si{\joule\per\mole\per\kelvin}] & 69.9 & --- & --- & 68.4 \\
+Constante dieléctrica & 78.4 & 53 & --- & 76.1 \\
+$\langle N_{\mathrm{SHB}}\rangle$ ($r \leq \SI{2.93}{\angstrom}$) & 2.2\,$\pm$\,0.5 & 5.8 & 4.5 & 2.1 \\
+\bottomrule
+\end{tabular}
+\end{table}

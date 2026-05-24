@@ -1,0 +1,221 @@
+\documentclass[11pt,a4paper,twoside]{report}
+
+% ============================================================
+%   PAQUETES
+% ============================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,activeacute]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{physics}
+\usepackage{bm}
+\usepackage{siunitx}
+\sisetup{output-decimal-marker={,}}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,
+            urlcolor=blue!50!black,linktoc=all,
+            pdftitle={Teoria Generalizada del Efecto Mpemba},
+            pdfauthor={Mpemba-X Project}}
+\usepackage[capitalise,spanish]{cleveref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,decorations.pathreplacing}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage{epigraph}
+
+% ============================================================
+%   COMANDOS PERSONALIZADOS
+% ============================================================
+\newcommand{\Mp}{\text{Mp}}
+\newcommand{\Tb}{T_{b}}
+\newcommand{\Th}{T_{h}}
+\newcommand{\Tc}{T_{c}}
+\newcommand{\Tw}{T_{w}}
+\newcommand{\Tinit}{T_{0}}
+\newcommand{\kB}{k_{\mathrm{B}}}
+\newcommand{\pieq}{\pi_{\mathrm{eq}}}
+\newcommand{\Dee}{D_{e}}
+\newcommand{\DLone}{D_{L_{1}}}
+\newcommand{\DKL}{D_{\mathrm{KL}}}
+\renewcommand{\Re}{\operatorname{Re}}
+
+\newtheorem{theorem}{Teorema}[chapter]
+\newtheorem{proposition}[theorem]{Proposición}
+\newtheorem{lemma}[theorem]{Lema}
+\newtheorem{corollary}[theorem]{Corolario}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definición}
+\newtheorem{example}[theorem]{Ejemplo}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Observación}
+
+% --- Style for listings (C++ / Python / INI) ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codegreen}{rgb}{0.1,0.5,0.1}
+\definecolor{codeblue}{rgb}{0.1,0.2,0.6}
+\definecolor{codered}{rgb}{0.7,0.1,0.1}
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\lstdefinestyle{cppstyle}{
+    backgroundcolor=\color{codebg},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codered},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2,
+    language=C++
+}
+\lstdefinestyle{inistyle}{
+    backgroundcolor=\color{codebg},
+    basicstyle=\ttfamily\footnotesize,
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codeblue}\bfseries,
+    stringstyle=\color{codered},
+    breaklines=true,
+    captionpos=b
+}
+\lstset{style=cppstyle}
+
+% --- Page styles ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[LO]{\rightmark}
+\fancyhead[RE]{\leftmark}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% Chapter styling
+\titleformat{\chapter}[display]
+    {\normalfont\huge\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\Huge}
+\titlespacing*{\chapter}{0pt}{-30pt}{30pt}
+
+% ============================================================
+%   TÍTULO Y AUTORES
+% ============================================================
+\title{
+    {\Huge\bfseries Teoría Generalizada del Efecto Mpemba}\\[0.5cm]
+    {\Large De la termodinámica clásica de no-equilibrio a la metrología cuántica y la termomayorización}\\[0.3cm]
+    {\large \textit{Compendio teórico, numérico y experimental con implementación CPU paralela}}
+}
+\author{Mpemba-X Project \\
+    \textit{Documentación completa del marco bibliográfico}}
+\date{\today}
+
+\begin{document}
+
+\frontmatter
+\pagestyle{empty}
+\maketitle
+\cleardoublepage
+
+% =====================
+% RESUMEN
+% =====================
+\thispagestyle{empty}
+\section*{Resumen}
+\addcontentsline{toc}{chapter}{Resumen}
+
+El efecto Mpemba ---fenómeno por el cual un sistema inicialmente más caliente puede 
+relajar térmicamente a un baño frío más rápido que un sistema inicialmente más 
+templado--- ha transitado en seis décadas de ser una anomalía empírica disputada a 
+constituir uno de los campos más activos de la termodinámica de no-equilibrio. Este 
+documento expone, con detalle deductivo riguroso y verificación numérica, los 
+\emph{nueve marcos teóricos} que han desarrollado la comprensión del fenómeno desde su 
+formalización formal hasta sus extensiones más recientes:
+
+\begin{enumerate}
+\item el debate experimental clásico en agua y su resolución mediante control de 
+nucleación (Mpemba--Osborne 1969; Burridge--Linden 2016; Hallstadius--Burridge 2020);
+\item los mecanismos estructurales en agua líquida basados en la memoria de enlaces 
+de hidrógeno y la supersolidez de piel (Zhang 2014; Jin--Goddard 2015; Naserifar--Goddard 2019);
+\item la formulación markoviana clásica y su criterio espectral 
+(Lu \& Raz 2017);
+\item el \emph{efecto Mpemba fuerte} y su índice topológico (Klich--Raz--Hirschberg--Vucelja 2019);
+\item la manifestación en fluidos granulares y gases de Maxwell 
+(Lasanta \emph{et al.} 2017; Biswas \emph{et al.} 2020);
+\item la verificación experimental coloidal y su contraparte inversa 
+(Kumar \& Bechhoefer 2020; Kumar, Chétrite \& Bechhoefer 2022);
+\item el efecto Mpemba como huella de memoria en vidrios de espín 
+(Baity-Jesi \emph{et al.} 2019);
+\item la extensión al régimen cuántico abierto markoviano y los puntos excepcionales 
+liouvillianos (Carollo \emph{et al.} 2021; Zhang \emph{et al.} 2025; 
+Chattopadhyay \emph{et al.} 2026; Li \& Yang 2026);
+\item y la unificación termodinámica vía termomayorización 
+(Vu \& Hayakawa 2025).
+\end{enumerate}
+
+Cada capítulo deriva las ecuaciones desde primeros principios, expone el método 
+numérico de integración utilizado en la suite \texttt{Mpemba-X v2}, y presenta los 
+resultados de validación contra los datos publicados. El documento se complementa con 
+una guía exhaustiva de uso del código en C++17 paralelizado con OpenMP y MPI.
+
+\vspace{1cm}
+\noindent\textbf{Palabras clave:} efecto Mpemba, termodinámica de no-equilibrio, ecuación maestra, 
+modos de relajación, supersolidez, enlaces de hidrógeno, vidrios de espín, ecuación de 
+Lindblad, información de Fisher cuántica, termomayorización, métodos espectrales, DSMC, 
+Langevin, dinámica molecular.
+
+\cleardoublepage
+
+% =====================
+% TABLA DE CONTENIDOS
+% =====================
+\pagestyle{fancy}
+\tableofcontents
+\cleardoublepage
+
+\mainmatter
+
+\input{chapters/01_introduccion}
+\input{chapters/02_debate_clasico}
+\input{chapters/03_mecanismos_agua}
+\input{chapters/04_markoviano}
+\input{chapters/05_mpemba_fuerte}
+\input{chapters/06_granular}
+\input{chapters/07_coloides}
+\input{chapters/08_spin_glass}
+\input{chapters/09_cuantico}
+\input{chapters/10_termomajorizacion}
+\input{chapters/11_metodos_numericos}
+\input{chapters/12_implementacion}
+\input{chapters/13_conclusiones}
+
+% ============================================================
+%   APÉNDICES
+% ============================================================
+\appendix
+\input{chapters/A1_thermomajorization_proofs}
+\input{chapters/A2_listing_codigo}
+
+% ============================================================
+%   BIBLIOGRAFÍA
+% ============================================================
+\backmatter
+\input{chapters/bibliografia}
+
+\end{document}

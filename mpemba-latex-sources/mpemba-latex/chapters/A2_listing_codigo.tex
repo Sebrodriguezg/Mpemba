@@ -1,0 +1,167 @@
+% ====================================================================
+% Apéndice B: Listados de código clave
+% ====================================================================
+\chapter{Listados de código clave}
+\label{ap:listings}
+
+Este apéndice reproduce los fragmentos clave del código fuente de 
+\texttt{Mpemba-X v2}. El código completo está disponible en el archivo 
+\texttt{mpemba-x-v2.tar.gz}.
+
+\section{El parser INI (extracto de \texttt{core/config\_parser.hpp})}
+
+\begin{lstlisting}[language=C++]
+class Config {
+public:
+    void load(const std::string& path) {
+        std::ifstream ifs(path);
+        if (!ifs) throw std::runtime_error("Config: cannot open " + path);
+        std::string line, section = "default";
+        while (std::getline(ifs, line)) {
+            line = trim(strip_comment(line));
+            if (line.empty()) continue;
+            if (line.front() == '[' && line.back() == ']') {
+                section = trim(line.substr(1, line.size() - 2));
+                continue;
+            }
+            auto eq = line.find('=');
+            std::string key = trim(line.substr(0, eq));
+            std::string value = trim(line.substr(eq + 1));
+            data_[section][key] = value;
+        }
+    }
+    
+    double require_double(const std::string& s, const std::string& k) const {
+        return std::stod(require_string(s, k));
+    }
+    
+    std::vector<double> get_double_list(const std::string& s, 
+                                         const std::string& k) const {
+        std::vector<double> out;
+        std::stringstream ss(get_string(s, k));
+        std::string tok;
+        while (std::getline(ss, tok, ','))
+            if (!trim(tok).empty()) out.push_back(std::stod(tok));
+        return out;
+    }
+private:
+    std::map<std::string, std::map<std::string, std::string>> data_;
+};
+\end{lstlisting}
+
+\section{Núcleo de la ecuación maestra markoviana}
+
+\begin{lstlisting}[language=C++]
+void rk4_step_dense(const DenseMarkov& M, std::vector<double>& p, double dt) {
+    int n = M.n;
+    std::vector<double> k1(n), k2(n), k3(n), k4(n), tmp(n);
+    dense_matvec(M, p.data(), k1.data());
+    
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < n; ++i) tmp[i] = p[i] + 0.5 * dt * k1[i];
+    dense_matvec(M, tmp.data(), k2.data());
+    
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < n; ++i) tmp[i] = p[i] + 0.5 * dt * k2[i];
+    dense_matvec(M, tmp.data(), k3.data());
+    
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < n; ++i) tmp[i] = p[i] + dt * k3[i];
+    dense_matvec(M, tmp.data(), k4.data());
+    
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < n; ++i)
+        p[i] += dt * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]) / 6.0;
+    
+    // Renormalize to handle numerical drift
+    double s = 0.0;
+    for (int i = 0; i < n; ++i) { if (p[i] < 0) p[i] = 0.0; s += p[i]; }
+    if (s > 0) for (int i = 0; i < n; ++i) p[i] /= s;
+}
+\end{lstlisting}
+
+\section{Integrador Langevin sobreamortiguado}
+
+\begin{lstlisting}[language=C++]
+// Euler-Maruyama for overdamped Langevin
+// dx = F(x) dt + sqrt(2 T dt) * eta
+double sqrt_2T_dt = std::sqrt(2.0 * T_bath * dt);
+
+for (int step = 0; step < n_steps; ++step) {
+    #pragma omp parallel
+    {
+        int tid = omp_get_thread_num();
+        PhiloxRNG& rng = rngs[tid];
+        #pragma omp for schedule(static)
+        for (int i = 0; i < N_traj; ++i) {
+            double F  = potential.force(X[i]);
+            double eta = rng.normal();
+            X[i] += F * dt + sqrt_2T_dt * eta;
+        }
+    }
+    // Histogram computation every n_steps_per_log steps...
+}
+\end{lstlisting}
+
+\section{Esquema de volúmenes finitos para ecuación de Fourier}
+
+\begin{lstlisting}[language=C++]
+// Micro-step of the water Fourier model (Zhang 2014)
+void micro_step(WaterColumn& w, double dt) {
+    int N = w.N;
+    double dx = w.dx;
+    double tau = tau_HB(w.theta_initial);
+    std::vector<double> theta_new(N), d_OH_new(N);
+    
+    #pragma omp parallel for schedule(static)
+    for (int i = 0; i < N; ++i) {
+        double q_in_left, q_out_right;
+        
+        // Robin BC at x=0 (drain)
+        if (i == 0) {
+            q_in_left = w.h_drain * (w.theta_bath - w.theta[i]);
+        } else {
+            double k_i = local_kappa(w, i), k_im = local_kappa(w, i-1);
+            double kf = 2.0 * k_i * k_im / (k_i + k_im + 1e-30);
+            q_in_left = -kf * (w.theta[i] - w.theta[i-1]) / dx;
+        }
+        
+        // Adiabatic BC at x=L
+        if (i == N - 1) {
+            q_out_right = 0.0;
+        } else {
+            double k_i = local_kappa(w, i), k_ip = local_kappa(w, i+1);
+            double kf = 2.0 * k_i * k_ip / (k_i + k_ip + 1e-30);
+            q_out_right = -kf * (w.theta[i+1] - w.theta[i]) / dx;
+        }
+        
+        // H-bond memory term
+        double dOH_eq = d_OH_equilibrium(w.theta[i]);
+        double ddOH = -(w.d_OH[i] - dOH_eq) / tau;
+        double q_mem = w.C_mem * ddOH;
+        
+        double rhoCp = local_rho(w, i) * Cp_water(w.theta[i]);
+        theta_new[i] = w.theta[i] + dt * (
+            (q_in_left - q_out_right) / (dx * rhoCp) + q_mem / rhoCp);
+        d_OH_new[i] = w.d_OH[i] + dt * ddOH;
+    }
+    w.theta.swap(theta_new);
+    w.d_OH.swap(d_OH_new);
+}
+\end{lstlisting}
+
+\section{Ejecución típica}
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\footnotesize]
+# Compilacion completa
+mkdir build && cd build
+cmake .. -DMPI_CXX_COMPILER=/usr/bin/mpicxx.openmpi
+make -j4
+
+# Ejecucion (uno por modulo)
+OMP_NUM_THREADS=4 mpirun --allow-run-as-root --oversubscribe -np 2 \
+    ./build/mpemba_water_fourier configs/water_demo.ini
+
+# Visualizacion
+python3 analysis/plot_water_fourier.py results/water_demo
+\end{lstlisting}

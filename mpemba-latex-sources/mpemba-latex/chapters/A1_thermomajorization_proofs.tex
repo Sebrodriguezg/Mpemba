@@ -1,0 +1,93 @@
+% ====================================================================
+% Apéndice A: Demostraciones sobre termomayorización
+% ====================================================================
+\chapter{Demostraciones sobre termomayorización}
+\label{ap:thermomajorization_proofs}
+
+\section{Demostración del teorema de Lu-Raz (\cref{thm:luraz_criterion})}
+
+\begin{proof}
+Sea $\vb{p}(t; \Tinit)$ la solución de la ecuación maestra con condición inicial 
+$\pieq(\Tinit)$ y baño $\Tb$. Su expansión espectral es \cref{eq:luraz_expansion}:
+\begin{equation}
+    p_i(t; \Tinit) - \pieq_i(\Tb) = \sum_{k \geq 2} c_k(\Tinit) v_{i,k} e^{-\lambda_k t}.
+\end{equation}
+%
+La distancia entrópica al equilibrio en el régimen asintótico está dominada por 
+el modo de menor autovalor:
+\begin{equation}
+    \Dee(t; \Tinit) \approx \alpha \cdot c_2(\Tinit)^2 \, e^{-2 \lambda_2 t}, 
+    \qquad \alpha > 0 \text{ constante.}
+\end{equation}
+%
+Para dos preparaciones $\Th > \Tw$:
+\begin{equation}
+    \frac{\Dee(t; \Th)}{\Dee(t; \Tw)} \approx \frac{c_2(\Th)^2}{c_2(\Tw)^2}.
+\end{equation}
+%
+\noindent Por tanto, $\Dee(t; \Th) < \Dee(t; \Tw)$ para $t$ grande si y solo si 
+$\abs{c_2(\Th)} < \abs{c_2(\Tw)}$, que es \cref{eq:luraz_criterion}.
+\end{proof}
+
+\section{Demostración del teorema de Vu-Hayakawa (\cref{thm:vu_hayakawa})}
+
+\begin{proof}[Esquema clásico]
+Sean $\vb{p}, \vb{q}$ y $\gamma$ la distribución de Gibbs del baño. Necesitamos 
+demostrar la equivalencia
+\begin{equation}
+    \vb{p} \succeq_{\Tb} \vb{q} \iff D_f(\vb{p} \| \gamma) \geq D_f(\vb{q} \| \gamma) 
+    \quad \forall f \in \mathcal{F},
+\end{equation}
+%
+donde $\mathcal{F}$ es la clase de funciones convexas con $f(1) = 0$.
+
+\textbf{(}$\Rightarrow$\textbf{)}: Si $\vb{p} \succeq_{\Tb} \vb{q}$, entonces 
+existe una matriz estocástica $\Phi$ con $\Phi \gamma = \gamma$ y 
+$\Phi \vb{p} = \vb{q}$. Por la \emph{contractividad de Csiszar} de las 
+$f$-divergencias bajo mapas que preservan la medida de referencia:
+\begin{equation}
+    D_f(\Phi \vb{p} \| \Phi \gamma) \leq D_f(\vb{p} \| \gamma) 
+    \implies D_f(\vb{q} \| \gamma) \leq D_f(\vb{p} \| \gamma). \qed
+\end{equation}
+
+\textbf{(}$\Leftarrow$\textbf{)}: Esta dirección es no trivial y requiere la 
+construcción explícita de la matriz $\Phi$. La idea de Lostaglio (2022) es 
+emplear las \emph{Lorenz integrals}: definir
+\begin{equation}
+    \mathcal{I}_a(\vb{p}, \gamma) = \sum_i \pi(p_i; a, \gamma_i),
+\end{equation}
+%
+para una familia uniparamétrica de funciones $\pi$ con propiedades adecuadas. 
+Si $D_f(\vb{p} \| \gamma) \geq D_f(\vb{q} \| \gamma)$ para todo $f$, entonces en 
+particular para la familia $\pi$, lo que implica que la curva de Lorenz de 
+$\vb{p}$ está por encima de la de $\vb{q}$. Por el teorema clásico de 
+Hardy-Littlewood-Pólya, existe la matriz biestocástica $\Phi$. \qed
+\end{proof}
+
+\section{Propiedad de la distancia entrópica de Lu-Raz}
+
+\begin{proposition}
+La distancia entrópica $\Dee$ del \cref{eq:dist_entropica} satisface
+\begin{equation}
+    \frac{d \Dee}{dt} \leq 0 \quad \text{en cualquier trayectoria markoviana},
+\end{equation}
+con igualdad solo en el equilibrio.
+\end{proposition}
+
+\begin{proof}
+Diferenciando $\Dee = \sum_i p_i \ln(p_i / \pieq_i)$:
+\begin{equation}
+    \frac{d \Dee}{dt} = \sum_i \dot{p}_i \ln(p_i / \pieq_i) + \sum_i \dot{p}_i
+    = \sum_{i,j} R_{ij} p_j \ln(p_i / \pieq_i),
+\end{equation}
+%
+donde el segundo término se anula por conservación de la probabilidad. 
+Reordenando con la condición de balance detallado $R_{ij} \pieq_j = R_{ji} \pieq_i$:
+\begin{equation}
+    \frac{d \Dee}{dt} = -\sum_{i < j} R_{ij} \pieq_j 
+    \left[\frac{p_i}{\pieq_i} - \frac{p_j}{\pieq_j}\right]
+    \ln\!\left[\frac{p_i/\pieq_i}{p_j/\pieq_j}\right].
+\end{equation}
+%
+El integrando es siempre $\geq 0$ por $(x - y) \ln(x/y) \geq 0$. \qed
+\end{proof}

@@ -1,0 +1,258 @@
+\babel@toc {spanish}{}\relax 
+\contentsline {chapter}{Resumen}{3}{Doc-Start}%
+\contentsline {chapter}{\numberline {1}Introducción y panorama histórico}{7}{chapter.1}%
+\contentsline {section}{\numberline {1.1}El fenómeno en su definición operacional}{7}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Notas históricas: 2350 años de observación}{7}{section.1.2}%
+\contentsline {section}{\numberline {1.3}El redescubrimiento de Mpemba (1963--1969)}{7}{section.1.3}%
+\contentsline {section}{\numberline {1.4}El problema de la reproducibilidad y la definición rigurosa}{8}{section.1.4}%
+\contentsline {section}{\numberline {1.5}La reformulación moderna del fenómeno}{8}{section.1.5}%
+\contentsline {section}{\numberline {1.6}Estructura de este documento}{9}{section.1.6}%
+\contentsline {chapter}{\numberline {2}El debate experimental clásico: del agua hirviendo al sitio de nucleación controlado}{10}{chapter.2}%
+\contentsline {section}{\numberline {2.1}La experiencia primigenia de Mpemba y Osborne (1969)}{10}{section.2.1}%
+\contentsline {section}{\numberline {2.2}Problemas epistemológicos de la definición clásica}{10}{section.2.2}%
+\contentsline {section}{\numberline {2.3}El análisis crítico de Burridge y Linden (2016)}{10}{section.2.3}%
+\contentsline {section}{\numberline {2.4}La rehabilitación experimental: Hallstadius y Burridge (2020)}{11}{section.2.4}%
+\contentsline {section}{\numberline {2.5}Mecanismos microscópicos propuestos en la literatura clásica}{11}{section.2.5}%
+\contentsline {section}{\numberline {2.6}Implicaciones para la teoría general}{12}{section.2.6}%
+\contentsline {chapter}{\numberline {3}Mecanismos estructurales en agua líquida: enlaces de hidrógeno y supersolidez}{13}{chapter.3}%
+\contentsline {section}{\numberline {3.1}El paradigma de Zhang \emph {et al.}: memoria de enlaces de hidrógeno y supersolidez de piel}{13}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Estructura del enlace $\mathrm {O:H{-}O}$ y sus dos componentes}{13}{subsection.3.1.1}%
+\contentsline {subsection}{\numberline {3.1.2}Ecuación de Fourier modificada}{13}{subsection.3.1.2}%
+\contentsline {subsection}{\numberline {3.1.3}Supersolidez de piel}{14}{subsection.3.1.3}%
+\contentsline {section}{\numberline {3.2}Mecanismos microscópicos: el modelo de Jin y Goddard (2015)}{14}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Protocolo de quench}{14}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Resultados clave: el papel del hexámero}{14}{subsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.2.3}Verificación por congelamiento de hexámero fijo}{15}{subsection.3.2.3}%
+\contentsline {section}{\numberline {3.3}El paradigma polimérico de Naserifar y Goddard (2019)}{15}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}El descubrimiento: agua como polímero dinámico ramificado}{15}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Estructura de la cadena polimérica}{15}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Transición vítrea a 227 K}{16}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Conexión con el efecto Mpemba: el quench polimérico}{16}{subsection.3.3.4}%
+\contentsline {section}{\numberline {3.4}Síntesis del marco molecular}{16}{section.3.4}%
+\contentsline {chapter}{\numberline {4}Dinámica markoviana fuera del equilibrio: el formalismo de Lu y Raz}{17}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Motivación: el efecto Mpemba como propiedad genérica}{17}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Marco matemático: ecuación maestra y operador de tasas}{17}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Balance detallado y distribución de equilibrio}{17}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Descomposición espectral}{18}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Solución general de la ecuación maestra}{18}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.4}Régimen asintótico y modo dominante}{18}{subsection.4.2.4}%
+\contentsline {section}{\numberline {4.3}Criterio del efecto Mpemba}{18}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Función de distancia entrópica}{18}{subsection.4.3.1}%
+\contentsline {section}{\numberline {4.4}Ejemplo paradigmático: sistema de tres estados}{19}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Cálculo numérico del coeficiente $c_2(T)$}{19}{subsection.4.4.1}%
+\contentsline {section}{\numberline {4.5}El efecto Mpemba inverso (calentamiento anómalo)}{19}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Asimetría termodinámica de los procesos directo e inverso}{19}{subsection.4.5.1}%
+\contentsline {section}{\numberline {4.6}Modelo de Ising 1D antiferromagnético en cadena}{20}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Implementación numérica}{20}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}Validación numérica}{20}{subsection.4.7.1}%
+\contentsline {chapter}{\numberline {5}El efecto Mpemba fuerte y el índice topológico}{21}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Motivación: más allá del cruzamiento ordinario}{21}{section.5.1}%
+\contentsline {section}{\numberline {5.2}Construcción de la matriz de tasas simetrizada}{21}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Definición del coeficiente $a_2(T_{0})$}{21}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}Propiedades fundamentales del coeficiente $a_2$}{22}{subsection.5.3.1}%
+\contentsline {section}{\numberline {5.4}El índice de Mpemba: definición topológica}{22}{section.5.4}%
+\contentsline {subsection}{\numberline {5.4.1}Significado físico del índice}{22}{subsection.5.4.1}%
+\contentsline {section}{\numberline {5.5}Modelo de Energía Aleatoria (REM) con barreras aleatorias}{22}{section.5.5}%
+\contentsline {subsection}{\numberline {5.5.1}Resultados estadísticos para el REM}{23}{subsection.5.5.1}%
+\contentsline {subsection}{\numberline {5.5.2}Transición de fase de Derrida}{23}{subsection.5.5.2}%
+\contentsline {section}{\numberline {5.6}Verificación numérica}{23}{section.5.6}%
+\contentsline {section}{\numberline {5.7}El efecto Mpemba fuerte INVERSO}{23}{section.5.7}%
+\contentsline {section}{\numberline {5.8}Conexión con MCMC y simulated annealing}{24}{section.5.8}%
+\contentsline {section}{\numberline {5.9}Resumen y prerequisitos para el efecto Mpemba fuerte}{24}{section.5.9}%
+\contentsline {chapter}{\numberline {6}El efecto Mpemba en fluidos granulares y gases de Maxwell}{25}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Motivación: disipación y desviación de la maxwelliana}{25}{section.6.1}%
+\contentsline {section}{\numberline {6.2}Termodinámica de un gas granular}{25}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}Temperatura granular y distribución de Maxwell-Boltzmann}{25}{subsection.6.2.1}%
+\contentsline {subsection}{\numberline {6.2.2}Coeficiente de Sonine}{25}{subsection.6.2.2}%
+\contentsline {section}{\numberline {6.3}Ecuaciones de momentos truncadas}{25}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Argumento del efecto Mpemba granular}{26}{section.6.4}%
+\contentsline {subsection}{\numberline {6.4.1}Protocolo de Lasanta \emph {et al.}: dos preparaciones cruzadas}{26}{subsection.6.4.1}%
+\contentsline {subsection}{\numberline {6.4.2}Solución analítica y verificación numérica}{26}{subsection.6.4.2}%
+\contentsline {section}{\numberline {6.5}Simulación DSMC: Bird's algorithm}{26}{section.6.5}%
+\contentsline {subsection}{\numberline {6.5.1}Inicialización con curtosis deseada}{27}{subsection.6.5.1}%
+\contentsline {section}{\numberline {6.6}Extensión a mezclas binarias: Biswas \emph {et al.}}{27}{section.6.6}%
+\contentsline {subsection}{\numberline {6.6.1}Acoplamiento difusión-colisión}{27}{subsection.6.6.1}%
+\contentsline {subsection}{\numberline {6.6.2}Aplicaciones a sistemas reales}{27}{subsection.6.6.2}%
+\contentsline {section}{\numberline {6.7}Otras manifestaciones granulares: literatura adicional}{27}{section.6.7}%
+\contentsline {section}{\numberline {6.8}Implementación numérica}{28}{section.6.8}%
+\contentsline {chapter}{\numberline {7}Verificación experimental en sistemas coloidales}{29}{chapter.7}%
+\contentsline {section}{\numberline {7.1}La plataforma experimental: pinzas ópticas con realimentación}{29}{section.7.1}%
+\contentsline {subsection}{\numberline {7.1.1}Configuración experimental}{29}{subsection.7.1.1}%
+\contentsline {subsection}{\numberline {7.1.2}Generación de temperaturas iniciales mediante ruido externo}{29}{subsection.7.1.2}%
+\contentsline {section}{\numberline {7.2}Dinámica de Langevin sobreamortiguada}{29}{section.7.2}%
+\contentsline {subsection}{\numberline {7.2.1}Ecuación de Langevin}{29}{subsection.7.2.1}%
+\contentsline {subsection}{\numberline {7.2.2}Potencial de doble pozo asimétrico}{30}{subsection.7.2.2}%
+\contentsline {subsection}{\numberline {7.2.3}Distribución de equilibrio}{30}{subsection.7.2.3}%
+\contentsline {section}{\numberline {7.3}Ecuación de Fokker-Planck y modos de Liouville}{30}{section.7.3}%
+\contentsline {subsection}{\numberline {7.3.1}Conexión con el formalismo de Lu-Raz}{30}{subsection.7.3.1}%
+\contentsline {section}{\numberline {7.4}Resultados experimentales del efecto Mpemba ordinario y fuerte}{30}{section.7.4}%
+\contentsline {section}{\numberline {7.5}Métodos numéricos para la dinámica de Langevin}{31}{section.7.5}%
+\contentsline {subsection}{\numberline {7.5.1}Integrador de Euler-Maruyama}{31}{subsection.7.5.1}%
+\contentsline {subsection}{\numberline {7.5.2}Esquemas de orden superior: BAOAB}{31}{subsection.7.5.2}%
+\contentsline {subsection}{\numberline {7.5.3}Implementación paralela}{31}{subsection.7.5.3}%
+\contentsline {section}{\numberline {7.6}El efecto Mpemba inverso: Kumar, Chétrite y Bechhoefer (2022)}{32}{section.7.6}%
+\contentsline {subsection}{\numberline {7.6.1}Configuración invertida}{32}{subsection.7.6.1}%
+\contentsline {subsection}{\numberline {7.6.2}Asimetría entrópica y dificultad observacional}{32}{subsection.7.6.2}%
+\contentsline {subsection}{\numberline {7.6.3}Versión fuerte del calentamiento anómalo}{32}{subsection.7.6.3}%
+\contentsline {subsection}{\numberline {7.6.4}Implicaciones para tecnologías de calentamiento ultrarrápido}{32}{subsection.7.6.4}%
+\contentsline {section}{\numberline {7.7}Conexión con la teoría de procesos estocásticos no-Markov}{32}{section.7.7}%
+\contentsline {chapter}{\numberline {8}El efecto Mpemba en vidrios de espín como huella de memoria}{34}{chapter.8}%
+\contentsline {section}{\numberline {8.1}Motivación: el paisaje energético complejo}{34}{section.8.1}%
+\contentsline {section}{\numberline {8.2}El modelo de Edwards-Anderson}{34}{section.8.2}%
+\contentsline {subsection}{\numberline {8.2.1}Diagrama de fases en $d = 3$}{34}{subsection.8.2.1}%
+\contentsline {section}{\numberline {8.3}Dinámica de Glauber}{34}{section.8.3}%
+\contentsline {subsection}{\numberline {8.3.1}Múltiples paseos sincronizados}{35}{subsection.8.3.1}%
+\contentsline {section}{\numberline {8.4}La simulación Janus II}{35}{section.8.4}%
+\contentsline {section}{\numberline {8.5}Protocolo experimental computacional}{35}{section.8.5}%
+\contentsline {subsection}{\numberline {8.5.1}Definición de la longitud de coherencia}{35}{subsection.8.5.1}%
+\contentsline {section}{\numberline {8.6}El resultado clave: correlación monotónica entre $\xi $ y $e$}{35}{section.8.6}%
+\contentsline {section}{\numberline {8.7}El efecto Mpemba como consecuencia natural}{36}{section.8.7}%
+\contentsline {section}{\numberline {8.8}Conexión con la teoría de Klich-Raz}{36}{section.8.8}%
+\contentsline {section}{\numberline {8.9}Verificación numérica simplificada en CPU}{36}{section.8.9}%
+\contentsline {subsection}{\numberline {8.9.1}Aproximación a través del modelo REM}{36}{subsection.8.9.1}%
+\contentsline {section}{\numberline {8.10}Implicaciones para sistemas reales: aleaciones magnéticas}{37}{section.8.10}%
+\contentsline {chapter}{\numberline {9}El régimen cuántico: ecuación de Lindblad, puntos excepcionales y metrología}{38}{chapter.9}%
+\contentsline {section}{\numberline {9.1}El marco GKSL para sistemas cuánticos abiertos}{38}{section.9.1}%
+\contentsline {subsection}{\numberline {9.1.1}Propiedades fundamentales del liouvilliano}{38}{subsection.9.1.1}%
+\contentsline {section}{\numberline {9.2}Ecuación de Davies para un qubit}{38}{section.9.2}%
+\contentsline {subsection}{\numberline {9.2.1}Dinámica de la población}{39}{subsection.9.2.1}%
+\contentsline {subsection}{\numberline {9.2.2}Solución exacta}{39}{subsection.9.2.2}%
+\contentsline {section}{\numberline {9.3}El efecto Mpemba cuántico de Carollo et al. (2021)}{39}{section.9.3}%
+\contentsline {subsection}{\numberline {9.3.1}La proposición fundamental}{39}{subsection.9.3.1}%
+\contentsline {subsection}{\numberline {9.3.2}Estructura espectral del liouvilliano de Davies}{39}{subsection.9.3.2}%
+\contentsline {section}{\numberline {9.4}Puntos excepcionales liouvilianos}{39}{section.9.4}%
+\contentsline {subsection}{\numberline {9.4.1}Definición}{39}{subsection.9.4.1}%
+\contentsline {subsection}{\numberline {9.4.2}La conexión con el efecto Mpemba fuerte}{40}{subsection.9.4.2}%
+\contentsline {subsection}{\numberline {9.4.3}Significado físico}{40}{subsection.9.4.3}%
+\contentsline {section}{\numberline {9.5}Versiones del efecto Mpemba cuántico}{40}{section.9.5}%
+\contentsline {subsection}{\numberline {9.5.1}Sin simetrías globales (Liu, Vitale, Murciano)}{40}{subsection.9.5.1}%
+\contentsline {subsection}{\numberline {9.5.2}Canales protegidos por simetría SU(2)}{40}{subsection.9.5.2}%
+\contentsline {subsection}{\numberline {9.5.3}El efecto Mpemba fotónico (Longhi)}{40}{subsection.9.5.3}%
+\contentsline {subsection}{\numberline {9.5.4}Computación cuántica de Ising (D-Wave)}{40}{subsection.9.5.4}%
+\contentsline {section}{\numberline {9.6}El efecto Mpemba metrológico: Chattopadhyay et al. (2026)}{40}{section.9.6}%
+\contentsline {subsection}{\numberline {9.6.1}Termometría cuántica clásica vs no-equilibrio}{41}{subsection.9.6.1}%
+\contentsline {subsection}{\numberline {9.6.2}Información de Fisher cuántica}{41}{subsection.9.6.2}%
+\contentsline {subsection}{\numberline {9.6.3}Resultado clave de Chattopadhyay et al.}{41}{subsection.9.6.3}%
+\contentsline {section}{\numberline {9.7}Optimización metrológica de Li-Yang (2026)}{41}{section.9.7}%
+\contentsline {subsection}{\numberline {9.7.1}Argumento de la distinguibilidad local}{41}{subsection.9.7.1}%
+\contentsline {section}{\numberline {9.8}Implementación numérica del módulo cuántico}{42}{section.9.8}%
+\contentsline {subsection}{\numberline {9.8.1}Validación: reproducción de Chattopadhyay et al. Fig. 3}{42}{subsection.9.8.1}%
+\contentsline {chapter}{\numberline {10}Unificación termodinámica: el preorden de termomayorización}{43}{chapter.10}%
+\contentsline {section}{\numberline {10.1}El problema de la dependencia de métrica}{43}{section.10.1}%
+\contentsline {section}{\numberline {10.2}La solución de Vu-Hayakawa: el preorden de termomayorización}{43}{section.10.2}%
+\contentsline {subsection}{\numberline {10.2.1}Definición del preorden}{43}{subsection.10.2.1}%
+\contentsline {subsection}{\numberline {10.2.2}Construcción explícita: la curva de Lorenz térmica}{43}{subsection.10.2.2}%
+\contentsline {section}{\numberline {10.3}El teorema de equivalencia de métricas}{44}{section.10.3}%
+\contentsline {subsection}{\numberline {10.3.1}Demostración del teorema (esquema)}{44}{subsection.10.3.1}%
+\contentsline {section}{\numberline {10.4}Definición universal del efecto Mpemba}{45}{section.10.4}%
+\contentsline {section}{\numberline {10.5}Diagnóstico operacional: gap mínimo y máximo}{45}{section.10.5}%
+\contentsline {section}{\numberline {10.6}Aplicación al sistema markoviano de tres estados}{45}{section.10.6}%
+\contentsline {section}{\numberline {10.7}Extensión a recursos correlacionados}{46}{section.10.7}%
+\contentsline {section}{\numberline {10.8}Implementación del módulo}{46}{section.10.8}%
+\contentsline {chapter}{\numberline {11}Métodos numéricos}{48}{chapter.11}%
+\contentsline {section}{\numberline {11.1}Integración temporal de ecuaciones diferenciales ordinarias: Runge-Kutta de 4º orden}{48}{section.11.1}%
+\contentsline {subsection}{\numberline {11.1.1}Formulación}{48}{subsection.11.1.1}%
+\contentsline {subsection}{\numberline {11.1.2}Error de truncamiento}{48}{subsection.11.1.2}%
+\contentsline {subsection}{\numberline {11.1.3}Aplicación a la ecuación maestra markoviana}{48}{subsection.11.1.3}%
+\contentsline {section}{\numberline {11.2}Integración estocástica: Euler-Maruyama y esquemas relacionados}{49}{section.11.2}%
+\contentsline {subsection}{\numberline {11.2.1}Esquema Euler-Maruyama}{49}{subsection.11.2.1}%
+\contentsline {subsection}{\numberline {11.2.2}Condiciones de estabilidad}{49}{subsection.11.2.2}%
+\contentsline {subsection}{\numberline {11.2.3}Generación de números aleatorios}{49}{subsection.11.2.3}%
+\contentsline {section}{\numberline {11.3}Discretización espacial: diferencias finitas y volúmenes finitos}{50}{section.11.3}%
+\contentsline {subsection}{\numberline {11.3.1}Ecuación de difusión 1D con esquema explícito}{50}{subsection.11.3.1}%
+\contentsline {subsection}{\numberline {11.3.2}Condición CFL}{50}{subsection.11.3.2}%
+\contentsline {section}{\numberline {11.4}Diagonalización de matrices simétricas: método de Jacobi}{50}{section.11.4}%
+\contentsline {subsection}{\numberline {11.4.1}Algoritmo}{50}{subsection.11.4.1}%
+\contentsline {subsection}{\numberline {11.4.2}Complejidad y convergencia}{51}{subsection.11.4.2}%
+\contentsline {section}{\numberline {11.5}Direct Simulation Monte Carlo (DSMC) para gases granulares}{51}{section.11.5}%
+\contentsline {subsection}{\numberline {11.5.1}Algoritmo NTC (No-Time Counter)}{51}{subsection.11.5.1}%
+\contentsline {subsection}{\numberline {11.5.2}Paralelización OpenMP de DSMC}{51}{subsection.11.5.2}%
+\contentsline {section}{\numberline {11.6}Dinámica molecular: Velocity-Verlet y termostato de Berendsen}{51}{section.11.6}%
+\contentsline {subsection}{\numberline {11.6.1}Velocity-Verlet}{51}{subsection.11.6.1}%
+\contentsline {subsection}{\numberline {11.6.2}Termostato de Berendsen}{52}{subsection.11.6.2}%
+\contentsline {subsection}{\numberline {11.6.3}Potencial mW para agua}{52}{subsection.11.6.3}%
+\contentsline {subsection}{\numberline {11.6.4}Implementación}{52}{subsection.11.6.4}%
+\contentsline {section}{\numberline {11.7}Paralelización híbrida OpenMP + MPI}{52}{section.11.7}%
+\contentsline {subsection}{\numberline {11.7.1}Distribución MPI}{52}{subsection.11.7.1}%
+\contentsline {subsection}{\numberline {11.7.2}Paralelización OpenMP intra-rank}{53}{subsection.11.7.2}%
+\contentsline {chapter}{\numberline {12}La suite Mpemba-X v2: implementación de los nueve módulos}{54}{chapter.12}%
+\contentsline {section}{\numberline {12.1}Arquitectura general}{54}{section.12.1}%
+\contentsline {subsection}{\numberline {12.1.1}Principios de diseño}{54}{subsection.12.1.1}%
+\contentsline {subsection}{\numberline {12.1.2}Estructura de directorios}{54}{subsection.12.1.2}%
+\contentsline {section}{\numberline {12.2}El parser INI: configuración de experimentos}{55}{section.12.2}%
+\contentsline {subsection}{\numberline {12.2.1}Sintaxis del archivo de configuración}{55}{subsection.12.2.1}%
+\contentsline {subsection}{\numberline {12.2.2}Implementación del parser}{55}{subsection.12.2.2}%
+\contentsline {subsection}{\numberline {12.2.3}Validación de configuraciones}{55}{subsection.12.2.3}%
+\contentsline {section}{\numberline {12.3}El núcleo común (\texttt {core/})}{56}{section.12.3}%
+\contentsline {subsection}{\numberline {12.3.1}distance\_metrics.hpp}{56}{subsection.12.3.1}%
+\contentsline {subsection}{\numberline {12.3.2}philox\_rng.hpp}{56}{subsection.12.3.2}%
+\contentsline {subsection}{\numberline {12.3.3}jacobi\_eigen.hpp}{56}{subsection.12.3.3}%
+\contentsline {subsection}{\numberline {12.3.4}thermomajorization.hpp}{56}{subsection.12.3.4}%
+\contentsline {section}{\numberline {12.4}Detalle de los nueve módulos}{56}{section.12.4}%
+\contentsline {subsection}{\numberline {12.4.1}mpemba\_markovian}{56}{subsection.12.4.1}%
+\contentsline {subsection}{\numberline {12.4.2}mpemba\_klich\_raz}{56}{subsection.12.4.2}%
+\contentsline {subsection}{\numberline {12.4.3}mpemba\_granular\_analytic}{56}{subsection.12.4.3}%
+\contentsline {subsection}{\numberline {12.4.4}mpemba\_granular\_dsmc}{57}{subsection.12.4.4}%
+\contentsline {subsection}{\numberline {12.4.5}mpemba\_langevin}{57}{subsection.12.4.5}%
+\contentsline {subsection}{\numberline {12.4.6}mpemba\_langevin\_inverse}{57}{subsection.12.4.6}%
+\contentsline {subsection}{\numberline {12.4.7}mpemba\_water\_fourier}{57}{subsection.12.4.7}%
+\contentsline {subsection}{\numberline {12.4.8}mpemba\_water\_md}{57}{subsection.12.4.8}%
+\contentsline {subsection}{\numberline {12.4.9}mpemba\_quantum\_lindblad}{57}{subsection.12.4.9}%
+\contentsline {subsection}{\numberline {12.4.10}mpemba\_thermomajorization}{57}{subsection.12.4.10}%
+\contentsline {section}{\numberline {12.5}Comandos de ejecución típicos}{57}{section.12.5}%
+\contentsline {section}{\numberline {12.6}Tabla resumen de rendimiento}{58}{section.12.6}%
+\contentsline {chapter}{\numberline {13}Análisis de resultados de Mpemba-X v2 y conclusiones}{59}{chapter.13}%
+\contentsline {section}{\numberline {13.1}Resultado 1: efecto Mpemba markoviano (Lu-Raz 2017)}{59}{section.13.1}%
+\contentsline {subsection}{\numberline {13.1.1}Configuración utilizada}{59}{subsection.13.1.1}%
+\contentsline {subsection}{\numberline {13.1.2}Observaciones numéricas}{59}{subsection.13.1.2}%
+\contentsline {subsection}{\numberline {13.1.3}Diagnóstico de termomayorización}{59}{subsection.13.1.3}%
+\contentsline {subsection}{\numberline {13.1.4}Interpretación}{59}{subsection.13.1.4}%
+\contentsline {section}{\numberline {13.2}Resultado 2: efecto Mpemba fuerte en REM (Klich-Raz 2019)}{60}{section.13.2}%
+\contentsline {subsection}{\numberline {13.2.1}Configuración utilizada}{60}{subsection.13.2.1}%
+\contentsline {subsection}{\numberline {13.2.2}Estadística del índice}{60}{subsection.13.2.2}%
+\contentsline {subsection}{\numberline {13.2.3}Comparación con la literatura}{60}{subsection.13.2.3}%
+\contentsline {subsection}{\numberline {13.2.4}Realización característica}{60}{subsection.13.2.4}%
+\contentsline {subsection}{\numberline {13.2.5}Interpretación}{60}{subsection.13.2.5}%
+\contentsline {section}{\numberline {13.3}Resultado 3: granular analítico (Lasanta et al. 2017)}{60}{section.13.3}%
+\contentsline {subsection}{\numberline {13.3.1}Configuración utilizada}{60}{subsection.13.3.1}%
+\contentsline {subsection}{\numberline {13.3.2}Resultados}{60}{subsection.13.3.2}%
+\contentsline {subsection}{\numberline {13.3.3}Comparación con Lasanta \emph {et al.}}{61}{subsection.13.3.3}%
+\contentsline {section}{\numberline {13.4}Resultado 4: Langevin colloid (Kumar-Bechhoefer 2020)}{61}{section.13.4}%
+\contentsline {subsection}{\numberline {13.4.1}Configuración utilizada}{61}{subsection.13.4.1}%
+\contentsline {subsection}{\numberline {13.4.2}Resultados}{61}{subsection.13.4.2}%
+\contentsline {subsection}{\numberline {13.4.3}Verificación cuantitativa}{61}{subsection.13.4.3}%
+\contentsline {section}{\numberline {13.5}Resultado 5: efecto Mpemba inverso (Kumar-Chétrite 2022)}{61}{section.13.5}%
+\contentsline {subsection}{\numberline {13.5.1}Configuración utilizada}{61}{subsection.13.5.1}%
+\contentsline {subsection}{\numberline {13.5.2}Resultados}{61}{subsection.13.5.2}%
+\contentsline {subsection}{\numberline {13.5.3}Análisis crítico: ¿por qué no se observa el efecto?}{62}{subsection.13.5.3}%
+\contentsline {section}{\numberline {13.6}Resultado 6: Mpemba en agua macroscópica (Zhang et al. 2014)}{62}{section.13.6}%
+\contentsline {subsection}{\numberline {13.6.1}Configuración del experimento de demostración}{62}{subsection.13.6.1}%
+\contentsline {subsection}{\numberline {13.6.2}Visualización: campo $T(x, t)$}{62}{subsection.13.6.2}%
+\contentsline {subsection}{\numberline {13.6.3}Resultados cuantitativos}{63}{subsection.13.6.3}%
+\contentsline {subsection}{\numberline {13.6.4}Interpretación física}{63}{subsection.13.6.4}%
+\contentsline {subsection}{\numberline {13.6.5}Comparación con experimentos reales}{63}{subsection.13.6.5}%
+\contentsline {section}{\numberline {13.7}Resultado 7: dinámica molecular del agua (Jin-Goddard 2015)}{64}{section.13.7}%
+\contentsline {subsection}{\numberline {13.7.1}Configuración del test}{64}{subsection.13.7.1}%
+\contentsline {subsection}{\numberline {13.7.2}Resultados}{64}{subsection.13.7.2}%
+\contentsline {subsection}{\numberline {13.7.3}Limitación crítica}{64}{subsection.13.7.3}%
+\contentsline {section}{\numberline {13.8}Resultado 8: Mpemba metrológico cuántico (Carollo 2021 + Chattopadhyay 2026)}{65}{section.13.8}%
+\contentsline {subsection}{\numberline {13.8.1}Configuración}{65}{subsection.13.8.1}%
+\contentsline {subsection}{\numberline {13.8.2}Resultados clave}{65}{subsection.13.8.2}%
+\contentsline {subsection}{\numberline {13.8.3}Interpretación}{65}{subsection.13.8.3}%
+\contentsline {section}{\numberline {13.9}Resultado 9: termomayorización standalone}{65}{section.13.9}%
+\contentsline {section}{\numberline {13.10}Síntesis: la figura maestra}{65}{section.13.10}%
+\contentsline {section}{\numberline {13.11}Conclusiones y direcciones futuras}{66}{section.13.11}%
+\contentsline {subsection}{\numberline {13.11.1}Resumen de logros}{66}{subsection.13.11.1}%
+\contentsline {subsection}{\numberline {13.11.2}Limitaciones reconocidas}{67}{subsection.13.11.2}%
+\contentsline {subsection}{\numberline {13.11.3}Direcciones de trabajo futuras}{67}{subsection.13.11.3}%
+\contentsline {subsection}{\numberline {13.11.4}Mensaje final}{67}{subsection.13.11.4}%
+\contentsline {chapter}{\numberline {A}Demostraciones sobre termomayorización}{68}{appendix.Alph1}%
+\contentsline {section}{\numberline {A.1}Demostración del teorema de Lu-Raz (\cref {thm:luraz_criterion})}{68}{section.Alph1.1}%
+\contentsline {section}{\numberline {A.2}Demostración del teorema de Vu-Hayakawa (\cref {thm:vu_hayakawa})}{68}{section.Alph1.2}%
+\contentsline {section}{\numberline {A.3}Propiedad de la distancia entrópica de Lu-Raz}{69}{section.Alph1.3}%
+\contentsline {chapter}{\numberline {B}Listados de código clave}{70}{appendix.Alph2}%
+\contentsline {section}{\numberline {B.1}El parser INI (extracto de \texttt {core/config\_parser.hpp})}{70}{section.Alph2.1}%
+\contentsline {section}{\numberline {B.2}Núcleo de la ecuación maestra markoviana}{70}{section.Alph2.2}%
+\contentsline {section}{\numberline {B.3}Integrador Langevin sobreamortiguado}{71}{section.Alph2.3}%
+\contentsline {section}{\numberline {B.4}Esquema de volúmenes finitos para ecuación de Fourier}{71}{section.Alph2.4}%
+\contentsline {section}{\numberline {B.5}Ejecución típica}{72}{section.Alph2.5}%

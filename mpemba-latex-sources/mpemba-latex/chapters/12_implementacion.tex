@@ -1,0 +1,253 @@
+% ====================================================================
+% Capítulo 12: La suite Mpemba-X v2
+% ====================================================================
+\chapter{La suite Mpemba-X v2: implementación de los nueve módulos}
+\label{ch:implementacion}
+
+\section{Arquitectura general}
+
+\texttt{Mpemba-X v2} es una suite C++17 modular cuyo objetivo es proporcionar 
+\emph{una implementación verificable, reproducible y experimentalmente 
+calibrable} de los nueve marcos teóricos discutidos en este documento.
+
+\subsection{Principios de diseño}
+
+\begin{enumerate}
+\item \textbf{Configuración mediante archivos INI}: cada módulo recibe sus 
+parámetros físicos y numéricos desde un archivo de texto plano legible. 
+No hay parámetros codificados en el binario.
+\item \textbf{Reproducibilidad}: PRNG \emph{counter-based} (Philox) garantiza 
+que dos ejecuciones con la misma semilla produzcan resultados idénticos.
+\item \textbf{Portabilidad}: solo se requieren OpenMPI 4+, GCC 13+ y CMake 
+3.16+. Sin GPU, sin librerías propietarias.
+\item \textbf{Visualización integrada}: scripts Python con matplotlib 
+generan automáticamente las figuras de los papers reproducidos.
+\end{enumerate}
+
+\subsection{Estructura de directorios}
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\footnotesize]
+mpemba-x-v2/
+├── CMakeLists.txt              # Compila 10 binarios
+├── README.md                   # Documentación de uso
+├── core/                       # Headers comunes (header-only)
+│   ├── config_parser.hpp       # Parser INI
+│   ├── thermomajorization.hpp  # Diagnóstico Vu-Hayakawa 2025
+│   ├── distance_metrics.hpp    # L1, KL, entrópica
+│   ├── jacobi_eigen.hpp        # Eigensolver por rotaciones de Jacobi
+│   ├── philox_rng.hpp          # PRNG counter-based
+│   └── csv_io.hpp              # Escritura CSV
+├── configs/                    # Archivos de configuración por experimento
+├── modules/                    # 9 módulos C++
+│   ├── markovian/
+│   ├── klich_raz/
+│   ├── granular/               # main_analytic + main_dsmc
+│   ├── langevin/
+│   ├── langevin_inverse/
+│   ├── water_fourier/          # Modelo Zhang 2014 + visualización
+│   ├── water_md/               # mW coarse-grained
+│   ├── quantum_lindblad/
+│   └── thermomajorization/     # Diagnóstico Vu-Hayakawa standalone
+├── analysis/                   # Scripts Python de plots
+├── build/                      # Binarios compilados
+└── results/                    # Datos CSV y figuras PNG
+\end{lstlisting}
+
+\section{El parser INI: configuración de experimentos}
+
+\subsection{Sintaxis del archivo de configuración}
+
+Los archivos INI siguen el formato estándar con secciones entre corchetes y 
+parejas \texttt{clave = valor}. Los comentarios comienzan con \texttt{;} o 
+\texttt{\#}.
+
+\begin{lstlisting}[style=inistyle, caption={Ejemplo: config para el módulo water\_fourier (Zhang 2014)}]
+; configs/water_lab_100g.ini
+;
+; TEMPLATE para un experimento real con muestras de 100 g de agua
+
+[water]
+mass_g           = 100.0          ; <- masa medida en gramos
+tube_length_m    = 0.08           ; <- altura efectiva de la columna
+skin_thickness_m = 0.003
+
+[simulation]
+n_grid    = 60
+t_max_s   = 2400.0                ; 40 minutos
+dt_log_s  = 10.0
+
+[preparation_hot]
+T_initial_C = 95.0                ; <- temperatura inicial caliente
+
+[preparation_cold]
+T_initial_C = 30.0                ; <- temperatura inicial fría
+
+[bath]
+T_bath_C       = -18.0            ; <- temperatura del freezer
+h_drain_W_m2_K = 25.0
+
+[zhang_model]
+rho_skin_over_bulk = 0.75
+kappa_skin_factor  = 1.333
+C_mem_J_per_m3     = 5e7
+conv_velocity_m_s  = 0.0005
+
+[io]
+output_dir = results/water_lab_100g
+\end{lstlisting}
+
+\subsection{Implementación del parser}
+
+El parser es \texttt{header-only} en \texttt{core/config\_parser.hpp}. 
+Soporta:
+\begin{itemize}
+\item Valores numéricos (\texttt{int}, \texttt{double}, notación científica).
+\item Booleanos (\texttt{true/false}, \texttt{yes/no}, \texttt{1/0}).
+\item Listas separadas por comas: \texttt{T\_inits = 1.0, 2.5, 5.0}.
+\item Cadenas de caracteres.
+\item Comentarios en línea (caracteres \texttt{;} y \texttt{\#}).
+\end{itemize}
+
+\subsection{Validación de configuraciones}
+
+Cada módulo, al iniciar, imprime los parámetros leídos por consola. Esto 
+permite verificar inmediatamente que la configuración fue cargada correctamente. 
+Las claves \emph{obligatorias} (e.g. \texttt{T\_bath}) se acceden con 
+\texttt{require\_double()}, que lanza una excepción si faltan.
+
+\section{El núcleo común (\texttt{core/})}
+
+\subsection{distance\_metrics.hpp}
+
+Contiene tres métricas de distancia, todas aplicables a distribuciones 
+discretas:
+\begin{align}
+    \DLone(\vb{p}, \vb{q}) &= \sum_{i} \abs{p_i - q_i}, \\
+    \DKL(\vb{p}, \vb{q}) &= \sum_{i} p_i \log\!\left(\frac{p_i}{q_i}\right), \\
+    \Dee(\vb{p}; \Tb) &= \sum_{i} p_i \left[\log(p_i/\pieq_i) + \beta_b E_i\right].
+\end{align}
+%
+La forma entrópica $\Dee$ es la utilizada por Lu-Raz~\cite{lu2017}.
+
+\subsection{philox\_rng.hpp}
+
+Implementa el PRNG Philox-4x32-10~\cite{salmon2011}. Construido a partir de un 
+\emph{stream id} que combina \texttt{(mpi\_rank, omp\_thread, run\_id)} más 
+una semilla maestra. Garantiza:
+\begin{itemize}
+\item Ausencia de correlación entre hilos.
+\item Reproducibilidad bit-perfecta.
+\item Bajo overhead ($\sim 10$ ciclos por \texttt{double} aleatorio).
+\end{itemize}
+
+\subsection{jacobi\_eigen.hpp}
+
+Solver de autovalores para matrices simétricas reales mediante rotaciones de 
+Jacobi clásicas. Tolerancia $10^{-12}$ en la norma de Frobenius de la parte 
+fuera de la diagonal.
+
+\subsection{thermomajorization.hpp}
+
+Implementa la \cref{thm:lorenz_curve} y el \cref{thm:vu_hayakawa}: 
+construcción de curvas de Lorenz térmicas, comparación por gap signado, y 
+detección de cruzamientos. Ver Listing~\ref{lst:thermomaj_cpp} en el 
+\cref{ch:termomajorizacion}.
+
+\section{Detalle de los nueve módulos}
+
+\subsection{mpemba\_markovian}
+Resuelve la ecuación maestra del \cref{eq:master} para el sistema de tres 
+estados (Lu-Raz 2017) o la cadena de Ising 1D antiferromagnética. Genera CSVs 
+con $\DLone(t), \DKL(t), \Dee(t)$ para cada $\Tinit$ y el diagnóstico de 
+termomayorización entre la trayectoria más caliente y la más fría.
+
+\subsection{mpemba\_klich\_raz}
+Genera realizaciones REM, diagonaliza $\tilde{\vb{R}}$, calcula 
+$a_2(\Tinit)$ sobre una grilla logarítmica y cuenta ceros para obtener el 
+índice de Mpemba. Produce el histograma de índices y guarda una realización 
+representativa con $a_2$ no monótona.
+
+\subsection{mpemba\_granular\_analytic}
+Integra las ecuaciones de momentos de \cref{eq:granular_moments} con RK4. 
+Reproduce la Fig.~4 de Lasanta \emph{et al.}~\cite{lasanta2017} con 
+$t^{\ast} \approx 0.18$.
+
+\subsection{mpemba\_granular\_dsmc}
+Implementa DSMC-NTC para $N \sim 10^4$--$10^5$ esferas inelásticas. Mide 
+$T(t)$ y $a_2(t)$ directamente del ensemble.
+
+\subsection{mpemba\_langevin}
+Dinámica de Langevin sobreamortiguada en el potencial de doble pozo de 
+\cref{eq:double_well}. Reproduce el experimento de 
+Kumar-Bechhoefer~\cite{kumar2020} con $\Th = 1000, \Tw = 12, \Tc = 1$ y 
+cruzamiento en $t^{\ast} \approx 0.033$.
+
+\subsection{mpemba\_langevin\_inverse}
+Versión invertida del módulo anterior: dos preparaciones frías relajando hacia 
+un baño caliente (Kumar-Chétrite 2022~\cite{kumarchetrite2022}).
+
+\subsection{mpemba\_water\_fourier}
+Resuelve la ecuación \cref{eq:fourier_zhang} de Zhang \emph{et al.}~\cite{zhang2014} 
+con memoria de enlaces de hidrógeno y supersolidez de piel. \textbf{Salida 
+principal}: archivos CSV con el campo $\theta(x, t)$ completo, prestos para 
+visualización por mapa de calor.
+
+\subsection{mpemba\_water\_md}
+Dinámica molecular gruesa-grano con potencial mW (Stillinger-Weber tetraédrico, 
+parte 2-body). Sigue el protocolo de quench de Jin-Goddard 2015~\cite{jin_goddard2015}: 
+equilibrado a $\Tinit$, luego termostato Berendsen a $\Tb$. Mide número de 
+coordinación promedio como proxy estructural.
+
+\subsection{mpemba\_quantum\_lindblad}
+Resuelve la ecuación de Davies para un qubit (\cref{eq:p1_evolution}) y calcula 
+la información de Fisher cuántica por diferencias centradas. Reproduce el 
+efecto Mpemba metrológico de Chattopadhyay \emph{et al.}~\cite{chattopadhyay2026}.
+
+\subsection{mpemba\_thermomajorization}
+Diagnóstico universal standalone: lee trayectorias CSV de probabilidad y 
+energías, construye curvas de Lorenz térmicas a cada instante, y emite el 
+veredicto de Vu-Hayakawa.
+
+\section{Comandos de ejecución típicos}
+
+Cada binario toma como único argumento la ruta a un archivo de configuración:
+
+\begin{lstlisting}[language=bash, basicstyle=\ttfamily\footnotesize]
+# Markoviano: 4 ranks MPI, 2 hilos OpenMP por rank
+OMP_NUM_THREADS=2 mpirun --allow-run-as-root --oversubscribe -np 4 \
+    ./build/mpemba_markovian configs/markov_3state.ini
+
+# Langevin: 2 ranks, 4 hilos
+OMP_NUM_THREADS=4 mpirun --allow-run-as-root --oversubscribe -np 2 \
+    ./build/mpemba_langevin configs/colloid_kumar.ini
+
+# Agua Fourier (con visualización):
+OMP_NUM_THREADS=4 mpirun --allow-run-as-root --oversubscribe -np 2 \
+    ./build/mpemba_water_fourier configs/water_demo.ini
+python3 analysis/plot_water_fourier.py results/water_demo
+\end{lstlisting}
+
+\section{Tabla resumen de rendimiento}
+
+\begin{table}[h]
+\centering
+\caption{Tiempo de ejecución de los módulos en una máquina de prueba (Intel 
+8-core), configuración $4 \times 2$.}
+\label{tab:performance}
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Módulo} & \textbf{Configuración} & \textbf{Tiempo} \\
+\midrule
+\texttt{mpemba\_markovian} & 8 $\Tinit$, $t_{\max} = 80$ & \SI{8}{\second} \\
+\texttt{mpemba\_klich\_raz} & $L = 12$, 8000 realizaciones & \SI{0.2}{\second} \\
+\texttt{mpemba\_granular\_analytic} & serial & $<$\SI{0.1}{\second} \\
+\texttt{mpemba\_granular\_dsmc} & $N = 30000$, $t_{\max} = 6$ & \SI{0.3}{\second} \\
+\texttt{mpemba\_langevin} & $N = 2 \times 10^5$ trayectorias, $t_{\max} = 0.5$ & \SI{140}{\second} \\
+\texttt{mpemba\_langevin\_inverse} & idem & \SI{92}{\second} \\
+\texttt{mpemba\_water\_fourier} & 100 g, $t_{\max} = 40$ min, $N = 60$ & \SI{0.1}{\second} \\
+\texttt{mpemba\_water\_md} & $N = 128$, 2500 pasos & \SI{1}{\second} \\
+\texttt{mpemba\_quantum\_lindblad} & 5 $\Tinit$, 6000 pasos & $<$\SI{0.01}{\second} \\
+\bottomrule
+\end{tabular}
+\end{table}
