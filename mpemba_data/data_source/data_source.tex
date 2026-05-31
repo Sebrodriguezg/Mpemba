@@ -1,0 +1,95 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+
+\title{\textbf{Repositorios y Bases de Datos Validadas:\\ El Efecto Mpemba}}
+\author{Documento de Trabajo}
+\date{31 de Mayo de 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+El presente documento cataloga las bases de datos de acceso abierto y material suplementario correspondientes a validaciones experimentales y numéricas del efecto Mpemba, abarcando desde la termodinámica de fluidos clásica hasta los sistemas cuánticos de muchos cuerpos[cite: 46, 47].
+\end{abstract}
+
+\section{Bases de Datos Clásicas: Fluidos y Congelación}
+Estos conjuntos de datos corresponden a experimentos macroscópicos controlados (volumen, rugosidad del contenedor, pureza del agua), diseñados para aislar variables y probar el efecto Mpemba tradicional[cite: 51].
+
+\begin{itemize}
+    \item \textbf{Janni, Ampudia \& Dahlberg (2026)} [cite: 60]
+    \begin{itemize}
+        \item \textbf{Fuente:} RSC Applied Interfaces (Acceso Abierto)[cite: 64, 285].
+        \item \textbf{Descripción:} Datos sobre la variabilidad de la constante de enfriamiento $\kappa$ por corrientes de aire; compara agua desionizada con agua de grifo (176 muestras)[cite: 62, 63].
+        \item \textbf{DOI/Enlace:} \url{https://doi.org/10.1039/D5LF00296F} [cite: 356]
+    \end{itemize}
+    
+    \item \textbf{Brownridge \& Zinet (2025)} [cite: 68]
+    \begin{itemize}
+        \item \textbf{Fuente:} The Journal of Physical Chemistry B (Datos Suplementarios)[cite: 73, 657].
+        \item \textbf{Descripción:} Muestras de 53.01 mL en un entorno saturado de agentes nucleantes para eliminar la sobrefusión. Registra datos precisos con termopares desde la nucleación hasta la solidificación[cite: 69, 70, 71].
+        \item \textbf{DOI/Enlace:} \url{https://doi.org/10.1021/acs.jpcb.5c05877} [cite: 648]
+    \end{itemize}
+
+    \item \textbf{Hallstadius \& Burridge (2020)} [cite: 73]
+    \begin{itemize}
+        \item \textbf{Fuente:} Proceedings of the Royal Society A (Datos Abiertos)[cite: 77, 1591].
+        \item \textbf{Descripción:} Base de datos que prueba el control interfacial introduciendo sitios de nucleación artificiales (lija) en los vasos[cite: 74, 75].
+        \item \textbf{DOI/Enlace:} \url{http://dx.doi.org/10.1098/rspa.2019.0829} [cite: 1553]
+    \end{itemize}
+
+    \item \textbf{Klimov \& Finkelstein (2025)} [cite: 64]
+    \begin{itemize}
+        \item \textbf{Fuente:} Preprint arXiv (CC BY 4.0)[cite: 68].
+        \item \textbf{Descripción:} Datos de tiempos de espera estocásticos para la nucleación del hielo en muestras selladas de $\sim 1$ mL[cite: 64, 67].
+    \end{itemize}
+\end{itemize}
+
+\section{Bases de Datos Cuánticas y de No-Equilibrio (Repositorios en Zenodo)}
+En el dominio cuántico, los datos no miden temperatura directa, sino asimetría de entrelazamiento, decaimiento de subespacios y distancias de traza[cite: 86, 92]. 
+
+\begin{itemize}
+    \item \textbf{Data and Code for ``Quantum Mpemba Effect in Random Circuits''} [cite: 91]
+    \begin{itemize}
+        \item \textbf{Autor:} Xhek Turkeshi (2025)[cite: 210, 235].
+        \item \textbf{Archivos/Volumen:} \texttt{deployment\_mpemba.zip} (355.8 MB total data volume)[cite: 213, 230].
+        \item \textbf{Variables:} Ángulo de inclinación del espín ($\theta$), asimetría de entrelazamiento (EA) y tasas de decaimiento[cite: 92].
+        \item \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.15710877} [cite: 90, 231]
+    \end{itemize}
+
+    \item \textbf{Data underpinning ``Quantum Mpemba effect in chaotic systems with conservation laws''} [cite: 94]
+    \begin{itemize}
+        \item \textbf{Autores:} Thomas Martin Müller, Silvia Pappalardi, Rosario Fazio (2026)[cite: 95, 259].
+        \item \textbf{Archivos/Volumen:} \texttt{Floquet.zip} y cuadernos Jupyter (7.1 GB)[cite: 94, 96, 267].
+        \item \textbf{Variables:} Matrices de densidad reducida y observables de espín bajo dinámicas de Floquet[cite: 96, 97].
+        \item \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.19554939} [cite: 94, 274]
+    \end{itemize}
+
+    \item \textbf{Replication Data for: The Ergotropic Mpemba Effect in Non-Markovian Quantum Systems} [cite: 102]
+    \begin{itemize}
+        \item \textbf{Autores:} Yan Li, Wenlin Li, Xingli Li (2025)[cite: 103, 243].
+        \item \textbf{Variables:} Evolución temporal de la capacidad de extracción de trabajo útil (ergotropía)[cite: 104, 105].
+        \item \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.16892817} [cite: 102, 244]
+    \end{itemize}
+
+    \item \textbf{Quantum Pontus-Mpemba Effects in Real and Imaginary-time Dynamics} [cite: 99]
+    \begin{itemize}
+        \item \textbf{Autor:} Hui Yu (2025)[cite: 589].
+        \item \textbf{Archivos/Volumen:} \texttt{QPME data.zip} en formato .txt (217.7 kB)[cite: 99, 590, 598].
+        \item \textbf{Variables:} Distancias de traza de operadores en dinámicas de proyección[cite: 100].
+        \item \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.17042663} [cite: 98, 603]
+    \end{itemize}
+    
+    \item \textbf{The Mpemba Effect and Its Inverse - A Viscous Time Theory Interpretation} [cite: 106]
+    \begin{itemize}
+        \item \textbf{Descripción:} Propuesta conceptual sobre coherencia informacional y viscosidad temporal[cite: 108, 109].
+        \item \textbf{DOI:} \url{https://doi.org/10.5281/zenodo.15167863} [cite: 106]
+    \end{itemize}
+\end{itemize}
+
+\end{document}
