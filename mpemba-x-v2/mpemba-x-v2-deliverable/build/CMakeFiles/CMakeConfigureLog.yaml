@@ -914,3 +914,405 @@ events:
         
       exitCode: 0
 ...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-41JGnL"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-41JGnL"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-41JGnL'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_81711/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_81711.dir/build.make CMakeFiles/cmTC_81711.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-41JGnL'
+        Building CXX object CMakeFiles/cmTC_81711.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_81711.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-41JGnL/test_mpi.cpp
+        Linking CXX executable cmTC_81711
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_81711.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_81711.dir/test_mpi.cpp.o -o cmTC_81711  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-41JGnL'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-WpQXNU"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-WpQXNU"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-WpQXNU'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_b122d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_b122d.dir/build.make CMakeFiles/cmTC_b122d.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-WpQXNU'
+        Building CXX object CMakeFiles/cmTC_b122d.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_b122d.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-WpQXNU/test_mpi.cpp
+        Linking CXX executable cmTC_b122d
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_b122d.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_b122d.dir/test_mpi.cpp.o -o cmTC_b122d  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-WpQXNU'
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-8w9d44"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-8w9d44"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-8w9d44'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_a3930/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_a3930.dir/build.make CMakeFiles/cmTC_a3930.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-8w9d44'
+        Building CXX object CMakeFiles/cmTC_a3930.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_a3930.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-8w9d44/test_mpi.cpp
+        Linking CXX executable cmTC_a3930
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_a3930.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_a3930.dir/test_mpi.cpp.o -o cmTC_a3930  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-8w9d44'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BED6TH"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BED6TH"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BED6TH'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_c5bb0/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_c5bb0.dir/build.make CMakeFiles/cmTC_c5bb0.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BED6TH'
+        Building CXX object CMakeFiles/cmTC_c5bb0.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_c5bb0.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BED6TH/test_mpi.cpp
+        Linking CXX executable cmTC_c5bb0
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_c5bb0.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_c5bb0.dir/test_mpi.cpp.o -o cmTC_c5bb0  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BED6TH'
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-QCz5tH"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-QCz5tH"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-QCz5tH'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_771a6/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_771a6.dir/build.make CMakeFiles/cmTC_771a6.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-QCz5tH'
+        Building CXX object CMakeFiles/cmTC_771a6.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_771a6.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-QCz5tH/test_mpi.cpp
+        Linking CXX executable cmTC_771a6
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_771a6.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_771a6.dir/test_mpi.cpp.o -o cmTC_771a6  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-QCz5tH'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BknvPt"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BknvPt"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BknvPt'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2d276/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_2d276.dir/build.make CMakeFiles/cmTC_2d276.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BknvPt'
+        Building CXX object CMakeFiles/cmTC_2d276.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_2d276.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BknvPt/test_mpi.cpp
+        Linking CXX executable cmTC_2d276
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2d276.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_2d276.dir/test_mpi.cpp.o -o cmTC_2d276  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-BknvPt'
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-RvY4gs"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-RvY4gs"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-RvY4gs'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_04f8d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_04f8d.dir/build.make CMakeFiles/cmTC_04f8d.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-RvY4gs'
+        Building CXX object CMakeFiles/cmTC_04f8d.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_04f8d.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-RvY4gs/test_mpi.cpp
+        Linking CXX executable cmTC_04f8d
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_04f8d.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_04f8d.dir/test_mpi.cpp.o -o cmTC_04f8d  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-RvY4gs'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-H39VUV"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-H39VUV"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-H39VUV'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_4f812/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_4f812.dir/build.make CMakeFiles/cmTC_4f812.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-H39VUV'
+        Building CXX object CMakeFiles/cmTC_4f812.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_4f812.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-H39VUV/test_mpi.cpp
+        Linking CXX executable cmTC_4f812
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4f812.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_4f812.dir/test_mpi.cpp.o -o cmTC_4f812  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-H39VUV'
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-30cwqC"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-30cwqC"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-30cwqC'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2d57f/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_2d57f.dir/build.make CMakeFiles/cmTC_2d57f.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-30cwqC'
+        Building CXX object CMakeFiles/cmTC_2d57f.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_2d57f.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-30cwqC/test_mpi.cpp
+        Linking CXX executable cmTC_2d57f
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2d57f.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_2d57f.dir/test_mpi.cpp.o -o cmTC_2d57f  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-30cwqC'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-jltkfx"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-jltkfx"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-jltkfx'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_2bcf6/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_2bcf6.dir/build.make CMakeFiles/cmTC_2bcf6.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-jltkfx'
+        Building CXX object CMakeFiles/cmTC_2bcf6.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_2bcf6.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-jltkfx/test_mpi.cpp
+        Linking CXX executable cmTC_2bcf6
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_2bcf6.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_2bcf6.dir/test_mpi.cpp.o -o cmTC_2bcf6  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-jltkfx'
+        
+      exitCode: 0
+...
+
+---
+events:
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1322 (_MPI_try_staged_settings)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1645 (_MPI_check_lang_works)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode normal"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-hAJjsC"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-hAJjsC"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_normal"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-hAJjsC'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_65e0d/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_65e0d.dir/build.make CMakeFiles/cmTC_65e0d.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-hAJjsC'
+        Building CXX object CMakeFiles/cmTC_65e0d.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_65e0d.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-hAJjsC/test_mpi.cpp
+        Linking CXX executable cmTC_65e0d
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_65e0d.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_65e0d.dir/test_mpi.cpp.o -o cmTC_65e0d  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-hAJjsC'
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1278 (try_compile)"
+      - "/usr/share/cmake-3.28/Modules/FindMPI.cmake:1672 (_MPI_try_staged_settings)"
+      - "CMakeLists.txt:14 (find_package)"
+    description: "The MPI test test_mpi for CXX in mode MPICXX"
+    directories:
+      source: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-0zLfMT"
+      binary: "/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-0zLfMT"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: ""
+      CMAKE_CXX_FLAGS_DEBUG: "-g"
+      CMAKE_EXE_LINKER_FLAGS: ""
+    buildResult:
+      variable: "MPI_RESULT_CXX_test_mpi_MPICXX"
+      cached: true
+      stdout: |
+        Change Dir: '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-0zLfMT'
+        
+        Run Build Command(s): /usr/bin/cmake -E env VERBOSE=1 /usr/bin/gmake -f Makefile cmTC_f90ac/fast
+        /usr/bin/gmake  -f CMakeFiles/cmTC_f90ac.dir/build.make CMakeFiles/cmTC_f90ac.dir/build
+        gmake[1]: se entra en el directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-0zLfMT'
+        Building CXX object CMakeFiles/cmTC_f90ac.dir/test_mpi.cpp.o
+        /usr/bin/c++  -isystem /usr/lib/x86_64-linux-gnu/openmpi/include -isystem /usr/lib/x86_64-linux-gnu/openmpi/include/openmpi -std=c++17 -o CMakeFiles/cmTC_f90ac.dir/test_mpi.cpp.o -c /home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-0zLfMT/test_mpi.cpp
+        Linking CXX executable cmTC_f90ac
+        /usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_f90ac.dir/link.txt --verbose=1
+        /usr/bin/c++ CMakeFiles/cmTC_f90ac.dir/test_mpi.cpp.o -o cmTC_f90ac  -Wl,-rpath,/usr/lib/x86_64-linux-gnu/openmpi/lib /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi_cxx.so /usr/lib/x86_64-linux-gnu/openmpi/lib/libmpi.so 
+        gmake[1]: se sale del directorio '/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/CMakeScratch/TryCompile-0zLfMT'
+        
+      exitCode: 0
+...
