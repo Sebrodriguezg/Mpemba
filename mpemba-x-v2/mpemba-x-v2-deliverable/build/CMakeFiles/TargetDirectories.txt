@@ -1,0 +1,12 @@
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_markovian.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_klich_raz.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_granular_analytic.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_granular_dsmc.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_langevin.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_langevin_inverse.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_water_fourier.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_water_md.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_quantum_lindblad.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/mpemba_thermomajorization.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/edit_cache.dir
+/home/sergio/Documentos/Mpemba/mpemba-x-v2/mpemba-x-v2-deliverable/build/CMakeFiles/rebuild_cache.dir
