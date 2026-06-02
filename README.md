@@ -7,6 +7,10 @@ files and capable of visualizing the temperature field of a water mass.
 CPU-only parallel implementation (OpenMP + MPI; no CUDA). Built and tested
 with OpenMPI 4.1 and GCC 13 on Ubuntu 24.
 
+> **Marco cuántico (QMpE):** el efecto Mpemba cuántico tiene su propio marco
+> teórico-numérico, con informe a nivel de artículo y código paralelo, en la
+> carpeta [`mpemba-cuantico/`](mpemba-cuantico/) (ver su `README.md`).
+
 ---
 
 ## What's new in v2 (vs v1)

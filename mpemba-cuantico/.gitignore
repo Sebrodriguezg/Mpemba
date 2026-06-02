@@ -1,0 +1,12 @@
+# artefactos de compilacion y ejecucion
+cpp/build/
+**/results/
+**/__pycache__/
+*.pyc
+# artefactos de LaTeX (se regeneran al compilar doc/)
+doc/*.aux
+doc/*.bbl
+doc/*.blg
+doc/*.log
+doc/*.out
+doc/*.toc

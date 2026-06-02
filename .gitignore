@@ -1,0 +1,10 @@
+# entorno virtual de Python (no versionar)
+.venv_mpemba/
+# artefactos de Python
+**/__pycache__/
+*.pyc
+# locks de ofimatica
+.~lock.*#
+# basura del sistema
+.DS_Store
+**/.DS_Store

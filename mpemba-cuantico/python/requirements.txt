@@ -1,0 +1,7 @@
+# Dependencias de la implementacion de referencia en Python (carpeta python/).
+# El nucleo qmpe.py solo usa numpy; run_demo/plot usan matplotlib.
+numpy>=1.24
+matplotlib>=3.6
+# Opcional (no requerido por el codigo de referencia):
+#   qutip>=4.7      # prototipado de trayectorias y comparacion
+#   petsc4py, slepc4py   # version HPC de los modos lentos (tarea T1)
