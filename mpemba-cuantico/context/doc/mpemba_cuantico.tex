@@ -523,6 +523,115 @@ con coste controlado por la dimensión de enlace $\chi$ \cite{Orus2014,Weimer202
 la variante de asimetría de entrelazamiento en cadenas largas \cite{AresCalabreseMurciano2025}.
 \end{itemize}
 
+\subsection{¿OpenMP, MPI o CUDA? Paradigma óptimo por tarea}
+\label{sec:paradigma_por_tarea}
+
+La elección del modelo de paralelización no es arbitraria: se \emph{deduce} del
+patrón de cómputo y del patrón de acceso a memoria de cada tarea. Tres patrones,
+tres protagonistas:
+\begin{itemize}[leftmargin=1.6em,itemsep=1pt]
+\item \textbf{MPI} (memoria distribuida) domina donde el factor limitante es la
+\emph{memoria agregada} ($\mathrm{nnz}(\mathbb{L})\sim4^N$) o donde hay
+\emph{reducciones globales} frecuentes (productos internos, promedios).
+\item \textbf{CUDA} (GPU) domina donde el cuello de botella es el \emph{ancho de
+banda de memoria} sobre datos regulares con alta reutilización del operador
+(SpMV repetido, GEMM).
+\item \textbf{OpenMP} (memoria compartida) es la \emph{capa intranodo
+transversal}: acelera el SpMV y las factorizaciones dentro de cada rango, y es el
+\emph{fallback} en nodos sin GPU.
+\end{itemize}
+La regla práctica: el grano grueso (entre nodos) lo fija MPI; el grano fino
+(dentro del nodo) lo fija CUDA si los datos son regulares, OpenMP si no.
+
+\paragraph{(T1) Modos lentos $\;\to\;$ MPI (híbrido MPI${+}$OpenMP).}
+El cómputo es Arnoldi con \emph{shift-invert}: ortogonalización de Gram--Schmidt
+---productos internos con \textbf{all-reduce} global en cada iteración--- más una
+\emph{resolución lineal dispersa} $(\mathbb{L}-\sigma\mathbb{1})^{-1}$ con factores
+LU que no caben en un nodo. El limitante es, por tanto, memoria distribuida ${+}$
+comunicación colectiva: territorio nativo de \textbf{MPI} (\textsc{slepc/petsc}
+con \textsc{mumps}/\textsc{superlu\_dist}). OpenMP entra \emph{dentro} de cada
+rango para el SpMV y la factorización. CUDA aporta poco aquí: la resolución
+lineal dispersa irregular y la dependencia secuencial del Gram--Schmidt encajan
+mal en GPU (salvo como precondicionador puntual).
+
+\paragraph{(T2) Evolución temporal $\;\to\;$ CUDA (multi-GPU vía MPI si no cabe).}
+La acción de Krylov / RK4 son \emph{miles de SpMV repetidos sobre el mismo}
+$\mathbb{L}$: cómputo regular, limitado por ancho de banda, con máxima
+reutilización del operador. Es el caso de uso estrella de \textbf{CUDA}
+(\textsc{cuSPARSE}): manteniendo $\mathbb{L}$ residente en VRAM y encadenando los
+pasos temporales \emph{sin trasiego} CPU$\leftrightarrow$GPU se obtiene el mayor
+retorno por nodo (típicamente ${\sim}$1 orden de magnitud en ancho de banda
+frente a CPU). \textbf{MPI} solo aparece cuando $m\,d^2$ excede una sola GPU:
+entonces se particiona el vector entre varias GPUs con intercambio de halo.
+OpenMP es el \emph{fallback} en nodos sin acelerador (es lo que hace hoy el
+núcleo de referencia en C++).
+
+\paragraph{(T3a) Trayectorias cuánticas $\;\to\;$ MPI (${+}$ \emph{batching} en CUDA).}
+Son $M$ evoluciones \emph{independientes} de vectores pequeños
+$\ket{\psi}\in\mathbb{C}^{d}$, sin comunicación salvo la reducción final
+$\rho=\mathbb{E}[\dyad{\psi}{\psi}]$. Es el caso \emph{embarrassingly parallel}
+por excelencia: \textbf{MPI} reparte lotes de trayectorias entre nodos con una
+única \texttt{MPI\_Reduce} al final, y la precisión escala como $M^{-1/2}$ con
+eficiencia casi perfecta. \textbf{CUDA} es el acelerador ideal \emph{dentro} de
+cada rango: una GPU evoluciona cientos--miles de trayectorias en paralelo
+(\emph{batched state-vector}), pues cada una es ligera. El esquema óptimo es
+\textbf{jerárquico}: MPI entre nodos, CUDA (o OpenMP, como el prototipo actual con
+\texttt{multiprocessing}) dentro.
+
+\paragraph{(T3b) Redes tensoriales $\;\to\;$ CUDA.}
+Las contracciones de MPO/MPDO son \emph{GEMM por bloques} de coste ${\sim}\chi^3$:
+la dimensión de enlace $\chi$ se traduce en matrices densas grandes. Ese es el
+\emph{workload} donde la GPU es imbatible (\textsc{cuBLAS}/\textsc{cuTENSOR});
+\textbf{CUDA} es la elección. \textbf{MPI} distribuye los bloques de la cadena o
+barre $\chi$/parámetros; OpenMP queda relegado a fallback.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Tarea & Patrón de cómputo & Cuello de botella & Primario & Apoyo \\
+\midrule
+T1 modos lentos & Arnoldi ${+}$ solve disperso & all-reduce ${+}$ memoria & \textbf{MPI} & OpenMP \\
+T2 evolución    & SpMV repetido ($e^{t\mathbb L}v$) & ancho de banda & \textbf{CUDA} & MPI multi-GPU \\
+T3a trayectorias& $M$ evoluciones indep.\ de $\ket\psi$ & ninguno (independientes) & \textbf{MPI} & CUDA \emph{batch} \\
+T3b redes tens. & GEMM por bloques ($\chi^3$) & cómputo denso & \textbf{CUDA} & MPI \\
+\bottomrule
+\end{tabular}
+\caption{Paradigma de paralelización óptimo por tarea. El primario fija el grano
+grueso; el apoyo acelera el grano fino o amplía la memoria. OpenMP es además el
+\emph{fallback} sin GPU en todas las tareas.}
+\label{tab:paradigma}
+\end{table}
+
+\paragraph{Camino de implementación por fases.}
+Las tareas se introducen en un orden que maximiza el valor incremental y da
+\emph{variedad} de paradigmas (cada fase estrena uno):
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+\item[\textbf{F0}] \emph{Referencia (hecho).} Núcleo C++ con OpenMP (SpMV
+intranodo) ${+}$ MPI (barrido de preparaciones). Valida la física y fija la
+\emph{baseline} de rendimiento.
+\item[\textbf{F1}] \emph{T2 en CUDA.} Portar el SpMV a \textsc{cuSPARSE} y mantener
+$\rho$ en VRAM. Mayor ganancia por nodo y primer salto en el $N$ alcanzable.
+\item[\textbf{F2}] \emph{T1 en MPI.} Acoplar \textsc{slepc/petsc} con
+\emph{shift-invert} para los modos lentos a escala multi-nodo; reutiliza el SpMV
+\emph{matrix-free} de F0 como operador.
+\item[\textbf{F3}] \emph{T3a en MPI (${+}$ CUDA).} Trayectorias repartidas entre
+nodos con reducción final; \emph{batching} en GPU dentro de cada rango. Habilita
+$N$ donde $d^2$ ya no cabe.
+\item[\textbf{F4}] \emph{T3b en CUDA.} Redes tensoriales (\textsc{cuTENSOR}) para
+cadenas largas y la asimetría de entrelazamiento.
+\end{enumerate}
+
+\begin{cajaclave}
+\textbf{Síntesis.} No hay un paradigma único óptimo: el \emph{valor} del proyecto
+está en que cada tarea exhibe el suyo. \textbf{MPI} para lo dominado por memoria
+agregada o reducciones (T1, T3a); \textbf{CUDA} para lo dominado por ancho de
+banda con datos regulares (T2, T3b); \textbf{OpenMP} como capa intranodo y
+\emph{fallback} universal. La arquitectura final es \emph{híbrida y jerárquica}:
+MPI entre nodos $\Rightarrow$ CUDA/OpenMP dentro.
+\end{cajaclave}
+
 \subsection{Resumen de costes}
 
 \begin{table}[h]
