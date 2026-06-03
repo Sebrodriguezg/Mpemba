@@ -903,6 +903,52 @@ $T_{\rm bath}$.}
 \label{fig:hpc}
 \end{figure}
 
+\subsection{Serie vs paralelo: medición directa de la mejora}
+
+Los entregables de evolución temporal (T2) y trayectorias (T3) miden la mejora de
+forma explícita, enfrentando el \textbf{tiempo de cómputo en serie y en paralelo}
+en función del parámetro propio de cada método. Las dos curvas de cada panel~(a)
+hacen visible la ganancia como la separación entre ellas, y el panel~(b) muestra
+el speedup $T_{\rm serie}/T_{\rm par}$ resultante.
+
+La integración temporal con OpenMP (RK4 y Krylov, Figuras~\ref{fig:sp_t2a}
+y~\ref{fig:sp_t2b}) paraleliza el producto de matrices \emph{dentro} de cada
+paso: el speedup \emph{crece con la malla} $d=2^N$ —de $\sim\!1{,}6$ a $\sim\!4{,}4$
+al pasar de $N=4$ a $N=7$, pues a mayor $d$ el \texttt{matmul} domina y amortiza el
+\emph{fork/join}— pero satura por debajo del ideal (memoria compartida,
+\emph{bandwidth-bound}). Las trayectorias con MPI (Figura~\ref{fig:sp_t3})
+paralelizan \emph{entre} tareas independientes: las rectas serie y paralelo
+\emph{divergen} al crecer el trabajo $M$ y el speedup es \emph{casi constante}
+($\approx5{,}6$, cerca del número de núcleos), la firma del paralelismo
+\emph{embarrassingly parallel}. Es la ilustración cuantitativa de que el paradigma
+óptimo lo dicta el patrón de cómputo, no una preferencia a priori.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.86\textwidth]{../../T2/a_integracion_directa/results/fig_t2a_serial_parallel.png}
+\caption{T2(a) RK4 directo (OpenMP): tiempo serie ($1$~hilo) vs paralelo
+($8$~hilos) frente al tamaño del sistema $N$ (malla $d=2^N$). El speedup crece con
+la malla y satura sublineal.}
+\label{fig:sp_t2a}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.86\textwidth]{../../T2/b_accion_exponencial/results/fig_t2b_serial_parallel.png}
+\caption{T2(b) Krylov (OpenMP): mismo patrón que RK4 —el hotspot paralelo, el
+\texttt{matmul} de la acción de $\mathcal L$, es común a ambos métodos.}
+\label{fig:sp_t2b}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.86\textwidth]{../../T3/integration/results/fig_t3_serial_parallel.png}
+\caption{T3(a) trayectorias cuánticas (MPI): tiempo serie ($1$~rango) vs paralelo
+($8$~rangos) frente al número de trayectorias $M$. Las rectas divergen y el speedup
+es casi constante ($\approx5{,}6$): escalado casi ideal, sin comunicación.}
+\label{fig:sp_t3}
+\end{figure}
+
 \subsection{Estado de las costuras de paralelización}
 
 La implementación distingue lo \emph{ya paralelizado} de lo \emph{preparado para

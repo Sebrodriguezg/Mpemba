@@ -1,0 +1,135 @@
+% =====================================================================
+%  Entregable T3(a): Muchos cuerpos por trayectorias cuanticas (MPI)
+%  Fragmento \input-able en context/doc/mpemba_cuantico.tex
+% =====================================================================
+\section{Muchos cuerpos: trayectorias cuánticas con MPI}
+\label{sec:t3}
+
+\subsection{Explicación del framework}
+En el régimen de \emph{muchos cuerpos} la representación densa del operador
+densidad $\rho$ se vuelve inviable: para $N$ qubits, $\rho$ tiene $d^2=4^N$
+elementos y el Liouvilliano $4^N\times4^N$. El método de \textbf{trayectorias
+cuánticas} (\emph{Monte Carlo wavefunction}, MCWF) sortea este muro: en lugar de
+propagar $\rho$, propaga $M$ \emph{vectores de estado puros}
+$\ket{\psi}\in\mathbb{C}^{d}$ y recupera el operador densidad como promedio
+estocástico
+\[
+\rho(t)=\mathbb{E}\big[\dyad{\psi(t)}{\psi(t)}\big]\;\approx\;\frac1M\sum_{j=1}^{M}\dyad{\psi_j(t)}{\psi_j(t)}.
+\]
+Esto reduce la memoria de $d^2$ a $d$ y, sobre todo, convierte el problema en uno
+\textbf{embarrassingly parallel}: cada trayectoria es independiente.
+
+\subsection{Discretización y método numérico}
+Cada trayectoria alterna evolución determinista no unitaria con saltos
+estocásticos (Dalibard--Mølmer--Castin). Con
+$H_{\mathrm{eff}}=H-\tfrac{i}{2}\sum_\mu L_\mu^\dagger L_\mu$:
+\begin{enumerate}[leftmargin=1.6em,itemsep=1pt]
+\item Evolución determinista de $\dot{\ket\psi}=-iH_{\mathrm{eff}}\ket\psi$ por
+\textbf{RK4} (4.º orden; elimina el sesgo $\mathcal{O}(\Delta t)$ de un Euler
+ingenuo). La norma decae: $\|\psi'\|^2=1-\delta p$.
+\item Probabilidad de salto $\delta p=1-\|\psi'\|^2$. Se sortea
+$\varepsilon\sim U(0,1)$: si $\varepsilon<\delta p$ ocurre un \emph{salto}
+(se elige el canal $\mu$ con probabilidad $\propto\|L_\mu\psi\|^2$ y
+$\ket\psi\leftarrow L_\mu\ket\psi/\|L_\mu\psi\|$); si no, $\ket\psi\leftarrow\psi'/\|\psi'\|$.
+\end{enumerate}
+El coste por paso es de unos pocos productos matriz--vector $\mathcal{O}(d^2)$
+(no $\mathcal{O}(d^3)$), y la precisión del promedio mejora como $M^{-1/2}$.
+
+\subsection{Implementación serial}
+En \texttt{T3/integration/src/trajectories\_mpi.cpp} (reutiliza
+\texttt{T2/common/lindblad.hpp} para el modelo y \texttt{matvec}). El estado
+inicial es el estado puro $\ket{0}$; la referencia de relajación es el Gibbs del
+baño. Cada trayectoria usa un generador \texttt{mt19937\_64} sembrado con su
+índice \emph{global}, lo que hace el resultado \textbf{reproducible e
+independiente del número de rangos}.
+
+\subsection{Justificación de la paralelización: MPI}
+El patrón de cómputo es radicalmente distinto al de la evolución temporal (T2):
+no hay una larga cadena de pasos dependientes sobre un único objeto grande, sino
+$M$ cálculos \emph{completamente independientes} sobre objetos pequeños
+($\ket\psi\in\mathbb{C}^d$), seguidos de una \emph{única reducción} (el promedio).
+Este es el caso de libro del paradigma \textbf{MPI} de paralelismo de tareas:
+cada rango calcula su lote de trayectorias sin comunicación alguna y al final una
+sola \texttt{MPI\_Reduce} promedia los acumuladores. No hay comunicación de halo
+ni dependencias, por lo que el escalado es \emph{casi ideal} y \emph{multinodo}
+(a diferencia de OpenMP, limitado a un nodo y al ancho de banda compartido).
+CUDA sería un acelerador complementario \emph{dentro} de cada rango (evolucionar
+cientos de trayectorias en lote en una GPU), pero el reparto grueso natural es
+MPI. La corrección se verifica de dos formas: (i)~el resultado es idéntico con
+1, 4 u 8 rangos (misma semilla por índice global $\Rightarrow$ reducción
+correcta); (ii)~el promedio reproduce la ecuación maestra exacta (validación
+abajo).
+
+\subsection{Comparación serial vs paralelo}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\textwidth]{../../T3/integration/results/fig_t3_speedup.png}
+\caption{Escalado fuerte de las trayectorias cuánticas sobre rangos MPI
+($N=7$, $M=2000$ fijo). El speedup es \textbf{casi ideal}
+($S_{\max}\approx5{,}5$ con $8$ rangos, eficiencia $69\,\%$),
+en marcado contraste con el escalado sublineal del OpenMP de la evolución
+temporal (T2, $S\approx2{,}9$--$3{,}3$). La razón: ausencia total de
+comunicación y dependencias entre trayectorias.}
+\label{fig:t3_speedup}
+\end{figure}
+
+\textbf{Contraste de paradigmas (el resultado clave del reparto T2 vs T3).} La
+evolución temporal (T2) paraleliza \emph{dentro} de un paso con OpenMP y satura
+pronto (memoria compartida, ancho de banda, fork/join): $S\!\lesssim\!3{,}3$. Las
+trayectorias (T3) paralelizan \emph{entre} tareas independientes con MPI y escalan
+casi linealmente: $S\approx5{,}5$. Es la ilustración perfecta de que el
+paradigma óptimo lo dicta el \emph{patrón de cómputo}, no una preferencia a
+priori.
+
+La Figura~\ref{fig:t3_serial_parallel} hace explícita la mejora variando el
+parámetro propio del método —el \textbf{número de trayectorias $M$}, que fija el
+trabajo Monte Carlo— y enfrentando el \textbf{tiempo en serie (1~rango) y en
+paralelo (8~rangos)}. Ambas crecen linealmente con $M$ (coste $\propto M$), pero
+con pendientes muy distintas: las rectas \emph{divergen}, y el cociente entre
+ellas se mantiene casi constante y cercano al número de núcleos, precisamente
+porque no hay comunicación entre trayectorias.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\textwidth]{../../T3/integration/results/fig_t3_serial_parallel.png}
+\caption{Tiempo de cómputo \textbf{serie vs paralelo} de las trayectorias frente
+al número de trayectorias $M$ ($N=6$, $d=64$). (a)~serie ($1$~rango, rojo) y
+paralelo ($8$~rangos, azul) crecen como $\propto M$ con pendientes distintas: el
+hueco —la mejora— se ensancha con $M$. (b)~el speedup
+$T_{\mathrm{serie}}/T_{\mathrm{par}}$ es \emph{casi constante} en $M$ (línea de
+referencia ideal $=8$), firma del paralelismo \emph{embarrassingly parallel}.}
+\label{fig:t3_serial_parallel}
+\end{figure}
+
+\subsection{Resultados y validación}
+\paragraph{Convergencia estadística.}
+La figura~\ref{fig:t3_error} muestra que el error del observable $D_{HS}$ final frente a
+la ecuación maestra exacta (evolución espectral desde $\ket{0}$,
+$D_{HS}^{\text{exacto}}=0{,}40490$) decae como $M^{-1/2}$ (pendiente medida
+$\approx-0{,}6$, consistente con $M^{-1/2}$), confirmando la convergencia de Monte Carlo. El uso de RK4 en
+la parte determinista elimina el sesgo sistemático: a $\Delta t=0{,}02$ y
+$M=8000$ el resultado coincide con el exacto con una diferencia de $\sim0{,}002$.
+
+\begin{figure}[h]
+\centering
+\begin{minipage}{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{../../T3/integration/results/fig_t3_error_M.png}
+\end{minipage}\hfill
+\begin{minipage}{0.49\textwidth}\centering
+\includegraphics[width=\textwidth]{../../T3/integration/results/fig_t3_relax.png}
+\end{minipage}
+\caption{Izquierda: convergencia estadística $M^{-1/2}$ del promedio de
+trayectorias. Derecha: curva de relajación $D_{HS}(t)$ para $N=8$ ($d=256$,
+$M=4000$), un sistema en el que el método de trayectorias usa vectores de $256$
+componentes en lugar de operadores densidad de $256^2$.}
+\label{fig:t3_error}
+\end{figure}
+
+\paragraph{Conclusión del método de trayectorias.}
+Las trayectorias cuánticas son el método de elección para muchos cuerpos: memoria
+$\mathcal{O}(d)$ por trayectoria, coste $\mathcal{O}(d^2)$ por paso y, sobre todo,
+\textbf{escalado MPI casi ideal} que aprovecha clústeres multinodo. El precio es
+la convergencia $M^{-1/2}$ (para una cifra más de precisión hacen falta $100\times$
+trayectorias), mitigable precisamente por la abundancia de paralelismo. Para
+cadenas largas y observables de entrelazamiento, el relevo natural son las redes
+tensoriales (entregable de Juan, \S\ref{sec:t3b}).

@@ -1,0 +1,4 @@
+integration/trajectories_mpi
+*.o
+**/__pycache__/
+*.pyc

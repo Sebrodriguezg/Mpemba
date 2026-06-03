@@ -1,0 +1,82 @@
+% =====================================================================
+%  Entregable 8: Influencia y relevancia en el efecto macro clasico
+%  Fragmento \input-able en context/doc/mpemba_cuantico.tex
+% =====================================================================
+\section{Influencia y relevancia en el efecto macroscópico clásico}
+\label{sec:macro}
+
+\subsection{La raíz macroscópica y su problema histórico}
+El efecto Mpemba nació como una observación \emph{macroscópica y clásica}: agua
+inicialmente más caliente que se congela antes que agua más fría
+(Mpemba--Osborne 1969). Durante medio siglo fue un fenómeno disputado, porque a
+escala macroscópica intervienen muchos mecanismos difíciles de controlar
+(convección, evaporación, sobreenfriamiento, gases disueltos) y porque
+\emph{carecía de un criterio teórico limpio}: ¿qué significa exactamente que un
+sistema esté ``más lejos del equilibrio''? Distintas métricas de distancia daban
+respuestas distintas (la crítica de Burridge--Linden 2016).
+
+\subsection{El mecanismo unificador: geometría espectral de la relajación}
+El marco cuántico desarrollado en este trabajo aporta, precisamente, lo que le
+faltaba al fenómeno macroscópico: un \textbf{mecanismo espectral riguroso} que es
+\emph{el mismo} en el régimen clásico y en el cuántico. En ambos casos la
+relajación se descompone en modos,
+\[
+\text{clásico: } \vb{p}(t)=\pi+\sum_{k\ge2} a_k\, e^{\lambda_k t}\,\vb{v}_k,
+\qquad
+\text{cuántico: } \rho(t)=\rss+\sum_{k\ge2} a_k\, e^{\lambda_k t}\,\hat r_k,
+\]
+con $\vb{v}_k$ los autovectores de la matriz de tasas y $\hat r_k$ los
+autooperadores del Liouvilliano. El efecto Mpemba ocurre, en \emph{los dos}
+mundos, cuando la preparación caliente \emph{solapa poco con el modo lento}
+($a_2\approx0$): es un fenómeno de \textbf{geometría no-normal} de los modos de
+relajación, no una propiedad del agua. Lo que en el agua era una anomalía
+empírica resulta ser un caso particular de una estructura matemática general.
+
+\subsection{Lo que el enfoque cuántico devuelve al problema clásico}
+Tres aportaciones del marco cuántico iluminan directamente el efecto macroscópico:
+\begin{enumerate}[leftmargin=1.7em,itemsep=2pt]
+\item \textbf{Criterio espectral del Mpemba fuerte} ($a_2=0$, Carollo \emph{et
+al.}): da una condición \emph{exacta} y constructiva para la aceleración, válida
+también para sistemas clásicos de muchos estados (vidrios, granulares).
+\item \textbf{Diagnóstico independiente de la métrica} (termomayorización,
+Vu--Hayakawa): resuelve la ambigüedad histórica de Burridge--Linden ---certifica
+el efecto bajo \emph{todas} las distancias monótonas a la vez--- y es aplicable
+tal cual a las distribuciones clásicas.
+\item \textbf{Los puntos excepcionales y el recurso metrológico}: conceptos
+nacidos en el régimen cuántico que sugieren nuevos protocolos (aceleración por
+preparación, termometría fuera del equilibrio) trasladables a plataformas
+clásicas controladas.
+\end{enumerate}
+
+\subsection{La firma universal: del macro clásico al cuántico}
+La figura~\ref{fig:macro} muestra la \emph{misma} firma ---el cruce de las curvas de
+relajación, donde una preparación que parte más lejos alcanza el equilibrio
+antes--- en tres dominios físicos usando los datos del repositorio: un coloide
+clásico en trampa óptica (Kumar 2022), un circuito cuántico de muchos cuerpos
+(Turkeshi 2024) y la simulación cuántica propia de este trabajo. La continuidad
+conceptual es total: el mismo criterio de solapamiento espectral explica el cruce
+en los tres casos.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../../macro/results/fig_macro_universal.png}
+\caption{La firma universal del efecto Mpemba ---el cruce de curvas de
+relajación--- del macro clásico al cuántico. (a)~coloide clásico experimental
+(Kumar 2022): la distancia al equilibrio de una preparación caliente cruza por
+debajo de otra más fría. (b)~circuito cuántico de muchos cuerpos (Turkeshi 2024):
+la asimetría de entrelazamiento de $\theta=1{,}2$ parte como la mayor pero se
+restaura antes. (c)~simulación cuántica propia (Mpemba fuerte por geometría
+espectral). El mecanismo ---solapamiento con los modos lentos--- es común.}
+\label{fig:macro}
+\end{figure}
+
+\subsection{Relevancia}
+La relevancia es doble. \emph{Hacia atrás}: el aparato cuántico
+(modos del generador, solapamientos, diagnósticos universales) proporciona al
+efecto macroscópico clásico el fundamento teórico riguroso que históricamente le
+faltó, convirtiendo una curiosidad sobre el agua en un teorema sobre la
+relajación fuera del equilibrio. \emph{Hacia adelante}: muestra que el mismo
+fenómeno, y las mismas herramientas computacionales (descomposición espectral,
+evolución del operador densidad, trayectorias), abarcan sin costura desde el vaso
+de agua hasta el procesador cuántico, lo que justifica tratar el efecto Mpemba
+como un \emph{principio general de diseño} de protocolos de relajación acelerada.

@@ -1,0 +1,6 @@
+# binarios compilados y artefactos (se regeneran)
+a_integracion_directa/rk4_evolution
+b_accion_exponencial/krylov_evolution
+*.o
+**/__pycache__/
+*.pyc
