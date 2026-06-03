@@ -5,7 +5,7 @@ from matplotlib.animation import FuncAnimation, PillowWriter
 import sys
 
 def main():
-    csv_file = "datos-serial.csv"
+    csv_file = "datos-serial_T94.csv"
     
     print(f"Cargando datos desde {csv_file}...")
     try:
@@ -63,55 +63,10 @@ def main():
     axes[2].grid(True, alpha=0.3)
 
     plt.tight_layout()
-    plt.savefig("serial.png", dpi=300)
-    print("Panel guardado como 'serial.png'.")
+    plt.savefig("mpemba_analisis.png", dpi=300)
+    print("Panel guardado como 'mpemba_analisis.png'.")
     plt.close()
 
-    # =========================================================================
-    # PARTE 2: GENERACIÓN DE LA ANIMACIÓN (GIF)
-    # =========================================================================
-    print("Generando animación GIF (esto puede tomar unos segundos)...")
-    
-    fig_anim, ax1 = plt.subplots(figsize=(8, 5))
-    ax2 = ax1.twinx()  # Eje secundario para la memoria O:H-O
-
-    ax1.set_xlim(x_pos[0] * 100, x_pos[-1] * 100)
-    ax1.set_ylim(-20, 100)
-    ax2.set_ylim(np.min(dOH_grid) * 0.999, np.max(dOH_grid) * 1.001)
-
-    ax1.set_xlabel('Posición $x$ [cm]')
-    ax1.set_ylabel('Temperatura [°C]', color='tab:red')
-    ax2.set_ylabel('Memoria $d_{OH}$ [$\AA$]', color='tab:blue')
-
-    line_T, = ax1.plot([], [], 'r-', lw=2, label='Temperatura')
-    line_dOH, = ax2.plot([], [], 'b--', lw=2, label='Enlace O:H-O')
-    
-    title_text = ax1.text(0.5, 1.05, '', transform=ax1.transAxes, ha='center', fontsize=12)
-    
-    # Línea divisoria de la piel
-    ax1.axvline(x=(10 * 1e-4)*100, color='gray', linestyle=':', lw=1.5)
-
-    def init():
-        line_T.set_data([], [])
-        line_dOH.set_data([], [])
-        title_text.set_text('')
-        return line_T, line_dOH, title_text
-
-    def update(frame):
-        # frame es el índice del array 'steps'
-        line_T.set_data(x_pos * 100, T_grid[:, frame])
-        line_dOH.set_data(x_pos * 100, dOH_grid[:, frame])
-        title_text.set_text(f'Evolución temporal: {tiempo_segundos[frame]:.2f} s')
-        return line_T, line_dOH, title_text
-
-    anim = FuncAnimation(fig_anim, update, frames=len(steps),
-                         init_func=init, blit=True, interval=100)
-
-    # Guardar GIF
-    writer = PillowWriter(fps=15)
-    anim.save("serial.gif", writer=writer)
-    print("Animación guardada como 'serial.gif'.")
-    plt.close()
 
 if __name__ == "__main__":
     main()

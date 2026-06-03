@@ -1,0 +1,5 @@
+Method,Threads,Time
+Serial,1,27.4883
+OpenMP,2,23.0117
+OpenMP,4,22.4791
+OpenMP,8,22.3867
