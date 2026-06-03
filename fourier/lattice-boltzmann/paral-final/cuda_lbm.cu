@@ -1,6 +1,7 @@
 /**
  * @file cuda_lbm.cu
  * @brief Simulador LBM D1Q3 - Efecto Mpemba (Difusividad Dinámica Acoplada)
+ * Corregido para acoplamiento de estado (Zhang) y fronteras térmicas.
  */
 
 #include <iostream>
@@ -12,9 +13,9 @@
 constexpr int N_NODES = 1000;
 constexpr double DX = 1e-4;
 constexpr double DT = 1e-2;
-constexpr int MAX_STEPS = 2400000;  // 4000 segundos simulados (suficiente para el cruce)
-constexpr int OUTPUT_FREQ = 2000;  // Guarda datos cada 20 segundos
-constexpr int SKIN_NODES = 10;
+constexpr int MAX_STEPS = 250000;  
+constexpr int OUTPUT_FREQ = 2000;  
+constexpr int SKIN_NODES = 50;
 
 // Constantes termodinámicas base
 constexpr double RHO_BULK = 1000.0, CP_BULK = 4184.0, K_BULK = 0.6;
@@ -22,8 +23,10 @@ constexpr double RHO_SKIN = RHO_BULK * 0.75, K_SKIN = K_BULK * 1.48;
 constexpr double T_SCALE = 57.2887, D_OH_0 = 1.0046;
 __constant__ double d_W[3] = {2.0/3.0, 1.0/6.0, 1.0/6.0};
 
-// Factor de acoplamiento fenomenológico: qué tanto la relajación del enlace mejora la difusividad
-constexpr double BETA_DIFFUSION = 0.05; 
+// Factor fenomenológico ampliado. Se requiere un valor alto para superar 
+// el calor sensible masivo en un modelo 1D puramente conductivo.
+constexpr double BETA_DIFFUSION = 15000.0; 
+
 
 struct Node { double f[3], f_new[3], T, d_oh, alpha_base, rho_cp; };
 
@@ -37,14 +40,17 @@ __global__ void collision_kernel(Node* grid, double tau_hb, double dt) {
         // 1. Calcular variables macroscópicas
         grid[i].T = grid[i].f[0] + grid[i].f[1] + grid[i].f[2];
         
-        // 2. Dinámica del enlace O:H-O
+        // 2. Dinámica de relajación del enlace O:H-O
         double d_oh_eq = d_compute_d_oh_eq(grid[i].T);
         double d_oh_dot = -(grid[i].d_oh - d_oh_eq) / tau_hb;
         grid[i].d_oh += d_oh_dot * dt;
         
-        // 3. EL NÚCLEO DEL EFECTO MPEMBA (Zhang 2014)
-        // La difusividad térmica se dispara proporcionalmente a la velocidad de relajación del enlace
-        double alpha_dynamic = grid[i].alpha_base + BETA_DIFFUSION * fabs(d_oh_dot);
+        // 3. NÚCLEO DEL EFECTO MPEMBA (Zhang 2014) - Corrección de Estado
+        // Se evalúa la deformación respecto al baño térmico (-18°C)
+        double d_oh_cold = 1.0046 - 2.7912e-5 * exp((-18.0 + 273.15) / T_SCALE);
+        
+        // La difusividad escala con la compresión retenida (memoria) del enlace
+        double alpha_dynamic = grid[i].alpha_base * (1.0 + BETA_DIFFUSION * ((d_oh_cold - grid[i].d_oh) / d_oh_cold));
 
         // 4. Mapeo a Lattice Boltzmann (Tiempo de relajación dinámico)
         double cs2 = (DX * DX) / (dt * dt * 3.0);
@@ -68,12 +74,16 @@ __global__ void streaming_kernel(Node* grid) {
 }
 
 __global__ void boundary_kernel(Node* grid, double T_BATH) {
+    // Frontera Izquierda (Dirichlet térmico exacto vía Anti-Bounce-Back)
     grid[0].T = T_BATH;
-    grid[0].f[1] = d_W[1]*T_BATH + d_W[2]*T_BATH - grid[0].f_new[2];
-    grid[0].f[0] = d_W[0]*T_BATH; grid[0].f[2] = grid[1].f_new[2]; 
+    grid[0].f[2] = grid[1].f_new[2]; // Streaming explícito entrante
+    grid[0].f[0] = d_W[0] * T_BATH;  // Equilibrio local
+    grid[0].f[1] = (1.0 / 3.0) * T_BATH - grid[0].f[2]; // Rebote de poblaciones
+    
+    // Frontera Derecha (Condición de simetría / Adiabática)
     grid[N_NODES - 1].f[0] = grid[N_NODES - 1].f_new[0];
-    grid[N_NODES - 1].f[2] = grid[N_NODES - 1].f_new[1];
     grid[N_NODES - 1].f[1] = grid[N_NODES - 2].f_new[1];
+    grid[N_NODES - 1].f[2] = grid[N_NODES - 1].f[1]; // Rebote especular
 }
 
 int main(int argc, char* argv[]) {
@@ -84,7 +94,6 @@ int main(int argc, char* argv[]) {
     const double T_BATH = -18.0;
 
     // Fórmula exacta empírica de Zhang (Fig 6a) convertida a segundos
-    // tau = 7.9 * [exp(-(theta_i - 129.9)/47.5) - 1] minutos
     double tau_hb = 474.0 * (std::exp(-(T_INIT - 129.9) / 47.5) - 1.0);
 
     Node* h_grid = new Node[N_NODES];
@@ -94,8 +103,8 @@ int main(int argc, char* argv[]) {
         
         h_grid[i].T = T_INIT;
         h_grid[i].d_oh = D_OH_0 - 2.7912e-5 * exp((T_INIT + 273.15) / T_SCALE);
-        h_grid[i].f[0]=h_grid[i].f_new[0]= (2.0/3.0)*T_INIT;
-        h_grid[i].f[1]=h_grid[i].f_new[1]=h_grid[i].f[2]=h_grid[i].f_new[2]= (1.0/6.0)*T_INIT;
+        h_grid[i].f[0] = h_grid[i].f_new[0] = (2.0/3.0)*T_INIT;
+        h_grid[i].f[1] = h_grid[i].f_new[1] = h_grid[i].f[2] = h_grid[i].f_new[2] = (1.0/6.0)*T_INIT;
     }
 
     Node* d_grid;

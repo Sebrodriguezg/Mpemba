@@ -30,8 +30,8 @@ def main():
         # Agrupación espacial para obtener la temperatura promedio del volumen
         df_mean = df.groupby('step')['T'].mean().reset_index()
         
-        # Escala temporal: DT en el kernel de CUDA es 1e-3
-        tiempo_segundos = df_mean['step'] * 1e-3
+        # CORRECCIÓN: Escala temporal ajustada al DT del kernel (DT = 1e-2)
+        tiempo_segundos = df_mean['step'] * 1e-2
         temperatura_media = df_mean['T']
         
         # Normalizar color (0 a 1) usando la temperatura máxima del barrido (95C)
