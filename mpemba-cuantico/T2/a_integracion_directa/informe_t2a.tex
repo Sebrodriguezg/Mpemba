@@ -17,30 +17,93 @@ construir el superoperador $\mathbb{L}$ de dimensión $d^2\times d^2$, aplicando
 en su lugar la acción \emph{matrix-free}
 $\mathcal{L}[\rho]=-i[H,\rho]+\sum_\mu(L_\mu\rho L_\mu^\dagger-\tfrac12\{L_\mu^\dagger L_\mu,\rho\})$.
 
-\subsection{Discretización y método numérico}
-Se emplea el método de \textbf{Runge--Kutta clásico de 4.º orden} (RK4), un
-integrador explícito de un paso. Para $\dot\rho=\mathcal{L}[\rho]$ y paso
-$\Delta t$:
+\subsection{Del modelo teórico a la discretización (paso a paso)}
+\label{ssec:t2a_discr}
+
+\paragraph{Paso 0 — Modelo teórico.} El punto de partida es la ecuación maestra
+GKSL \eqref{eq:gksl} para la cadena de Ising transversa disipativa:
+\[
+\dot\rho=\Lop[\rho]=-i[H,\rho]+\sum_\mu\Big(L_\mu\rho L_\mu^\dagger-\tfrac12\{L_\mu^\dagger L_\mu,\rho\}\Big),
+\qquad
+H=-J\sum_i Z_iZ_{i+1}-h\sum_i X_i,
+\]
+con canales locales de bajada/subida $L_{i,-}=\sqrt{\gamma(\bar n+1)}\,\sigma_i^-$,
+$L_{i,+}=\sqrt{\gamma\,\bar n}\,\sigma_i^+$ y $\bar n=\bar n(2h,T)$ la ocupación de
+Bose del baño. ($H$ y $\{L_\mu\}$ los construye \texttt{build\_ising}.)
+
+\paragraph{Paso 1 — Problema de valor inicial.} Fijada una preparación $\rho_0$
+(un estado de Gibbs a $T_0$), la evolución es el PVI
+$\dot\rho=\Lop[\rho]$, $\rho(0)=\rho_0$, planteado \emph{en el espacio de
+operadores}. No hay malla espacial que discretizar: la ``malla'' es la propia
+base de Hilbert ($d=2^N$ y $\rho$ es $d\times d$). Lo que se discretiza es el
+\textbf{tiempo}.
+
+\paragraph{Paso 2 — Semidiscretización temporal (RK4).} Se parte $[0,t_{\max}]$ en
+pasos $\Delta t$ con $\rho_n\approx\rho(n\Delta t)$ y se aplica el
+\textbf{Runge--Kutta clásico de 4.º orden} (explícito, un paso):
 \begin{align*}
-k_1&=\mathcal{L}[\rho_n], &
-k_2&=\mathcal{L}[\rho_n+\tfrac{\Delta t}{2}k_1], &
-k_3&=\mathcal{L}[\rho_n+\tfrac{\Delta t}{2}k_2], \\
-k_4&=\mathcal{L}[\rho_n+\Delta t\,k_3], &
+k_1&=\Lop[\rho_n], &
+k_2&=\Lop[\rho_n+\tfrac{\Delta t}{2}k_1], &
+k_3&=\Lop[\rho_n+\tfrac{\Delta t}{2}k_2], \\
+k_4&=\Lop[\rho_n+\Delta t\,k_3], &
 \rho_{n+1}&=\rho_n+\tfrac{\Delta t}{6}(k_1+2k_2+2k_3+k_4). &&
 \end{align*}
-El error local es $\mathcal{O}(\Delta t^5)$ y el global $\mathcal{O}(\Delta t^4)$.
-Cada paso requiere \emph{cuatro} evaluaciones del Liouvilliano; cada evaluación,
-para la cadena de Ising disipativa, son $2+3N_J$ productos de matrices densas
-$d\times d$ (con $N_J=2N$ operadores de salto), de coste $\mathcal{O}(d^3)$ cada
-uno. El coste por paso es por tanto $\mathcal{O}(N\,d^3)$.
+Error local $\mathcal{O}(\Delta t^5)$, global $\mathcal{O}(\Delta t^4)$.
 
-\subsection{Implementación serial}
+\paragraph{Paso 3 — La operación discreta fundamental ($\Lop$ \emph{matrix-free}).}
+Cada $k_i$ es \emph{una} evaluación de $\Lop[\cdot]$. El punto clave de HPC es que
+\textbf{no} se forma el superoperador $\mathbb{L}$ de tamaño $d^2\times d^2$; se
+evalúa la acción directamente sobre la matriz $\rho$ con productos $d\times d$:
+\[
+\Lop[V]=-i(HV-VH)+\sum_\mu\Big(L_\mu V L_\mu^\dagger-\tfrac12(L_\mu^\dagger L_\mu\,V+V\,L_\mu^\dagger L_\mu)\Big).
+\]
+Para la cadena de Ising son $2+3N_J$ productos de matrices densas $d\times d$
+($N_J=2N$ canales), de coste $\mathcal{O}(d^3)$ cada uno; el coste por paso es
+$\mathcal{O}(N\,d^3)$. \emph{Este producto de matrices es el hotspot que se
+paraleliza} (Listado~\ref{lst:t2a_omp}).
+
+\subsection{Implementación serial y líneas de código}
 El núcleo está en \texttt{common/lindblad.hpp} (acción \texttt{apply\_lindblad},
-modelo \texttt{build\_ising}, estado de Gibbs por tiempo imaginario) y el
-integrador en \texttt{a\_integracion\_directa/src/rk4\_evolution.cpp}. La
-preparación inicial es un estado de Gibbs a $T_0=5$ y la referencia de relajación
-el estado de Gibbs del baño a $T=0{,}8$. El \emph{hotspot} absoluto es el
-producto de matrices densas \texttt{matmul}.
+modelo \texttt{build\_ising}, Gibbs por tiempo imaginario) y el integrador en
+\texttt{a\_integracion\_directa/src/rk4\_evolution.cpp}. El Paso~2 (esquema RK4)
+es literalmente la función \texttt{rk4\_step}:
+
+\begin{lstlisting}[language=C++,caption={Paso RK4 sobre la ecuación maestra (\texttt{rk4\_evolution.cpp}). Las cuatro etapas $k_1\dots k_4$ son cuatro llamadas a la acción matrix-free \texttt{apply\_lindblad} (Paso~3).},label={lst:t2a_rk4}]
+static Mat rk4_step(const Mat& H, const std::vector<Mat>& Ls, const std::vector<Mat>& Lds,
+                    const std::vector<Mat>& LdL, const Mat& rho, double dt, int d) {
+    Mat k1 = apply_lindblad(H, Ls, Lds, LdL, rho, d);
+    Mat t2 = rho; axpy(t2, k1, 0.5*dt); Mat k2 = apply_lindblad(H, Ls, Lds, LdL, t2, d);
+    Mat t3 = rho; axpy(t3, k2, 0.5*dt); Mat k3 = apply_lindblad(H, Ls, Lds, LdL, t3, d);
+    Mat t4 = rho; axpy(t4, k3, dt);     Mat k4 = apply_lindblad(H, Ls, Lds, LdL, t4, d);
+    Mat out = rho;
+    for (int i = 0; i < d*d; ++i) out[i] += dt*(k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i])/6.0;
+    return out;
+}
+\end{lstlisting}
+
+\subsection{La directiva de paralelización (OpenMP)}
+La preparación inicial es un Gibbs a $T_0=5$ y la referencia el Gibbs del baño a
+$T=0{,}8$. El \emph{hotspot} absoluto es el producto de matrices densas
+\texttt{matmul}, y ahí —y solo ahí— está la directiva OpenMP: una única
+\texttt{\#pragma omp parallel for} reparte las filas $i$ del producto entre los
+hilos (cada fila es independiente, sin condiciones de carrera):
+
+\begin{lstlisting}[language=C++,caption={Producto de matrices con la directiva OpenMP (\texttt{common/lindblad.hpp}). Es el único punto paralelizado: el mismo binario, lanzado con distinto \texttt{OMP\_NUM\_THREADS}, da las curvas serie vs paralelo.},label={lst:t2a_omp}]
+inline Mat matmul(const Mat& A, const Mat& B, int d) {
+    Mat C(d * d, cd(0, 0));
+    #pragma omp parallel for schedule(static)   // <-- DIRECTIVA: reparte las filas i entre hilos
+    for (int i = 0; i < d; ++i) {
+        for (int k = 0; k < d; ++k) {
+            cd a = A[IDX(i, k, d)];
+            if (a == cd(0, 0)) continue;
+            const cd* brow = &B[IDX(k, 0, d)];
+            cd* crow = &C[IDX(i, 0, d)];
+            for (int j = 0; j < d; ++j) crow[j] += a * brow[j];
+        }
+    }
+    return C;
+}
+\end{lstlisting}
 
 \subsection{Justificación de la paralelización: OpenMP}
 El patrón de cómputo de la integración directa es: \emph{miles de pasos

@@ -18,28 +18,74 @@ formar. La idea de Krylov es proyectar la acción sobre el subespacio
 $\mathcal{K}_m=\text{span}\{\rho,\mathcal{L}\rho,\dots,\mathcal{L}^{m-1}\rho\}$,
 de dimensión $m\ll d^2$, donde el exponencial es trivial de calcular.
 
-\subsection{Discretización y método numérico}
-Se construye con \textbf{Arnoldi} una base ortonormal $\{Q_0,\dots,Q_{m-1}\}$ de
-$\mathcal{K}_m$ (cada $Q_i$ es un operador $d\times d$; el producto interno es el
-de Frobenius $\langle A,B\rangle=\Tr(A^\dagger B)$) y la matriz de Hessenberg
-$H_m\in\mathbb{C}^{m\times m}$ que representa $\mathcal{L}$ en esa base. Entonces
-\[
-e^{\tau\mathcal{L}}[\rho]\;\approx\;\|\rho\|_F\;\sum_{i=0}^{m-1}\big[e^{\tau H_m}\big]_{i,0}\,Q_i,
-\]
-donde $e^{\tau H_m}$ se calcula sobre la matriz \emph{pequeña} $m\times m$ por
-\emph{scaling-and-squaring} con serie de Taylor. El coste por bloque es de $m$
-aplicaciones de $\mathcal{L}$ (Arnoldi) más operaciones $\mathcal{O}(m\,d^2)$ y un
-$e^{\tau H_m}$ de coste $\mathcal{O}(m^3)$ despreciable. La ventaja decisiva: para
-$\tau$ dentro del radio de convergencia, $m\sim 20$--$30$ basta para precisión de
-máquina y \emph{un solo bloque avanza un paso de tiempo grande}, donde RK4
-necesitaría decenas o cientos de pasos pequeños.
+\subsection{Del modelo teórico a la discretización (paso a paso)}
+\label{ssec:t2b_discr}
 
-\subsection{Implementación serial}
-En \texttt{b\_accion\_exponencial/src/krylov\_evolution.cpp}: Arnoldi sobre la
-acción \texttt{apply\_lindblad} (\texttt{common/lindblad.hpp}), exponencial de
-matriz pequeña \texttt{small\_expm} (Taylor de 18 términos + \emph{squaring}), y
-avance por bloques de tamaño $\tau$. Se contabiliza el número de aplicaciones de
-$\mathcal{L}$ como medida de \emph{trabajo} independiente de la máquina.
+\paragraph{Paso 0 — Modelo teórico.} El mismo de~(a): la ecuación maestra GKSL
+$\dot\rho=\Lop[\rho]$ para la cadena de Ising disipativa (Hamiltoniano $H$ y
+canales $L_\mu$ idénticos, \S\ref{ssec:t2a_discr}).
+
+\paragraph{Paso 1 — Solución formal exacta.} En lugar de integrar la EDO, se usa
+que la solución del PVI es \emph{exacta} en un paso de tamaño $\tau$ mediante el
+exponencial del generador:
+\[
+\rho(t+\tau)=e^{\tau\Lop}[\rho(t)].
+\]
+El obstáculo: $e^{\tau\Lop}$ vive en el superoperador de dimensión
+$d^2\times d^2$, imposible de formar y exponenciar para $N$ grande.
+
+\paragraph{Paso 2 — Discretización por proyección de Krylov (Arnoldi).} Se proyecta
+la acción del exponencial sobre el subespacio de Krylov
+$\mathcal{K}_m=\text{span}\{\rho,\Lop\rho,\dots,\Lop^{m-1}\rho\}$ ($m\ll d^2$). Con
+\textbf{Arnoldi} se construye una base ortonormal $\{Q_0,\dots,Q_{m-1}\}$ (cada
+$Q_i$ es un operador $d\times d$; producto interno de Frobenius
+$\langle A,B\rangle=\Tr(A^\dagger B)$) y la matriz de Hessenberg
+$H_m\in\mathbb{C}^{m\times m}$ que representa $\Lop$ en esa base. El \emph{único}
+ingrediente que toca el sistema grande es la acción $w=\Lop[Q_j]$ en cada
+iteración de Arnoldi.
+
+\paragraph{Paso 3 — Exponencial pequeño y reconstrucción.} La acción discretizada es
+\[
+e^{\tau\Lop}[\rho]\;\approx\;\|\rho\|_F\;\sum_{i=0}^{m-1}\big[e^{\tau H_m}\big]_{i,0}\,Q_i,
+\]
+con $e^{\tau H_m}$ calculado sobre la matriz \emph{pequeña} $m\times m$ por
+\emph{scaling-and-squaring} con serie de Taylor (\texttt{small\_expm}). Coste por
+bloque: $m$ aplicaciones de $\Lop$ (Arnoldi) $+\,\mathcal{O}(m\,d^2)$ y un
+$e^{\tau H_m}$ de coste $\mathcal{O}(m^3)$ despreciable. La ventaja decisiva: para
+$\tau$ dentro del radio de convergencia, $m\sim20$--$30$ basta para precisión de
+máquina y \emph{un solo bloque avanza un paso de tiempo grande}.
+
+\subsection{Implementación serial y líneas de código}
+En \texttt{b\_accion\_exponencial/src/krylov\_evolution.cpp}. El bucle de Arnoldi
+(Paso~2) es el corazón del método; nótese que cada iteración llama a la misma
+acción \texttt{apply\_lindblad} de~(a) —es decir, \emph{comparte el hotspot
+paralelizable}—:
+
+\begin{lstlisting}[language=C++,caption={Bucle de Arnoldi de \texttt{krylov\_step} (\texttt{krylov\_evolution.cpp}): la línea \texttt{apply\_lindblad(...)} es la acción matrix-free de $\mathcal L$, donde se cuenta el trabajo (\texttt{L\_applies}) y donde reside la paralelización OpenMP (vía \texttt{matmul}, Listado~\ref{lst:t2b_omp}).},label={lst:t2b_arnoldi}]
+for (int j = 0; j < m; ++j) {
+    Mat w = apply_lindblad(H, Ls, Lds, LdL, Q[j], d); ++L_applies;   // <-- hotspot (OpenMP)
+    for (int i = 0; i <= j; ++i) {                       // ortogonalizacion de Gram-Schmidt
+        cd hij = fro_dot(Q[i], w); Hess[i*m+j] = hij; axpy(w, Q[i], -hij);
+    }
+    double hj = fro_norm(w);
+    Hess[(j+1)*m+j] = hj;
+    if (hj < 1e-12) { mm = j + 1; break; }               // convergencia anticipada
+    Q.push_back(scaled(w, 1.0 / hj));
+}
+\end{lstlisting}
+
+\subsection{La directiva de paralelización (OpenMP)}
+El \emph{hotspot} es el mismo que en~(a): el producto de matrices densas, llamado
+$m$ veces por bloque dentro de \texttt{apply\_lindblad}. La directiva es por tanto
+idéntica —una sola \texttt{\#pragma omp parallel for} en \texttt{matmul}
+(\texttt{common/lindblad.hpp})—, lo que explica que el escalado paralelo de~(b)
+sea equivalente al de~(a):
+
+\begin{lstlisting}[language=C++,caption={La misma directiva OpenMP que en T2(a): el bucle de filas de \texttt{matmul} es el único punto paralelizado (compartido por RK4 y Krylov).},label={lst:t2b_omp}]
+    #pragma omp parallel for schedule(static)   // <-- DIRECTIVA: filas i repartidas entre hilos
+    for (int i = 0; i < d; ++i)
+        for (int k = 0; k < d; ++k) { /* C[i,:] += A[i,k] * B[k,:] */ }
+\end{lstlisting}
 
 \subsection{Justificación de la paralelización: OpenMP}
 Como en el método~(a), el \emph{hotspot} es la acción $\mathcal{L}[\cdot]$ (el
@@ -52,7 +98,7 @@ régimen de muchos cuerpos, donde $d^2$ no cabe en memoria, la acción de Krylov
 paraleliza con MPI distribuyendo el vector $\ket{\rho}\rangle$; aquí, con $\rho$
 denso en un nodo, OpenMP es lo adecuado.) La corrección se verifica de dos formas:
 serial y paralelo dan el mismo resultado, y el resultado coincide con el del
-método~(a) (RK4) a todas las cifras: $D_{HS}^{\text{final}}=0{,}4326030367$ para
+método~(a) (RK4) a todas las cifras: $D_{HS}^{\text{final}}=0{,}4241128226$ para
 $N=6$, idéntico por ambos métodos (referencia exacta por evolución espectral:
 $D_{HS}^{\text{exacto}}=0{,}42411283$).
 

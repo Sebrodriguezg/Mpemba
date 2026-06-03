@@ -19,29 +19,84 @@ estocástico
 Esto reduce la memoria de $d^2$ a $d$ y, sobre todo, convierte el problema en uno
 \textbf{embarrassingly parallel}: cada trayectoria es independiente.
 
-\subsection{Discretización y método numérico}
-Cada trayectoria alterna evolución determinista no unitaria con saltos
-estocásticos (Dalibard--Mølmer--Castin). Con
-$H_{\mathrm{eff}}=H-\tfrac{i}{2}\sum_\mu L_\mu^\dagger L_\mu$:
-\begin{enumerate}[leftmargin=1.6em,itemsep=1pt]
-\item Evolución determinista de $\dot{\ket\psi}=-iH_{\mathrm{eff}}\ket\psi$ por
-\textbf{RK4} (4.º orden; elimina el sesgo $\mathcal{O}(\Delta t)$ de un Euler
-ingenuo). La norma decae: $\|\psi'\|^2=1-\delta p$.
-\item Probabilidad de salto $\delta p=1-\|\psi'\|^2$. Se sortea
-$\varepsilon\sim U(0,1)$: si $\varepsilon<\delta p$ ocurre un \emph{salto}
-(se elige el canal $\mu$ con probabilidad $\propto\|L_\mu\psi\|^2$ y
-$\ket\psi\leftarrow L_\mu\ket\psi/\|L_\mu\psi\|$); si no, $\ket\psi\leftarrow\psi'/\|\psi'\|$.
-\end{enumerate}
-El coste por paso es de unos pocos productos matriz--vector $\mathcal{O}(d^2)$
-(no $\mathcal{O}(d^3)$), y la precisión del promedio mejora como $M^{-1/2}$.
+\subsection{Del modelo teórico a la discretización (paso a paso)}
+\label{ssec:t3_discr}
 
-\subsection{Implementación serial}
+\paragraph{Paso 0 — Modelo teórico.} El mismo generador GKSL
+$\dot\rho=\Lop[\rho]$ de la cadena de Ising disipativa (\S\ref{ssec:t2a_discr}).
+
+\paragraph{Paso 1 — \emph{Unraveling} estocástico.} En vez de propagar $\rho$, se
+reescribe la ecuación maestra como un promedio sobre \emph{trayectorias} de
+estados puros (\emph{Monte Carlo wavefunction}, Dalibard--Mølmer--Castin):
+$\rho(t)=\mathbb{E}\big[\dyad{\psi(t)}{\psi(t)}\big]$. La parte coherente más la
+parte ``de no salto'' del disipador se agrupan en un \textbf{Hamiltoniano efectivo
+no hermítico}
+\[
+H_{\mathrm{eff}}=H-\tfrac{i}{2}\sum_\mu L_\mu^\dagger L_\mu,
+\]
+cuya evolución $\dot{\ket\psi}=-iH_{\mathrm{eff}}\ket\psi$ \emph{no} conserva la
+norma; el defecto de norma es exactamente la probabilidad de salto.
+
+\paragraph{Paso 2 — Discretización temporal de cada trayectoria.} Con paso
+$\Delta t$, cada trayectoria alterna:
+\begin{enumerate}[leftmargin=1.6em,itemsep=1pt]
+\item \textbf{Evolución determinista} $\dot{\ket\psi}=-iH_{\mathrm{eff}}\ket\psi$ por
+\textbf{RK4} (4.º orden; elimina el sesgo $\mathcal{O}(\Delta t)$ de un Euler
+ingenuo). Resulta $\psi'$ con $\|\psi'\|^2=1-\delta p$.
+\item \textbf{Salto estocástico.} Probabilidad $\delta p=1-\|\psi'\|^2$; se sortea
+$\varepsilon\sim U(0,1)$: si $\varepsilon<\delta p$ hay \emph{salto} (se elige el
+canal $\mu$ con probabilidad $\propto\|L_\mu\psi\|^2$ y
+$\ket\psi\leftarrow L_\mu\ket\psi/\|L_\mu\psi\|$); si no,
+$\ket\psi\leftarrow\psi'/\|\psi'\|$.
+\end{enumerate}
+
+\paragraph{Paso 3 — Promedio de conjunto.} El observable se recupera promediando
+las $M$ trayectorias,
+$\rho(t)\approx\frac1M\sum_{j=1}^{M}\dyad{\psi_j(t)}{\psi_j(t)}$. Coste por paso:
+unos pocos productos matriz--vector $\mathcal{O}(d^2)$ (no $\mathcal{O}(d^3)$);
+precisión del promedio $\propto M^{-1/2}$. \emph{Las $M$ trayectorias son
+independientes} $\Rightarrow$ el promedio es la única operación colectiva
+(Paso~3 $=$ una \texttt{MPI\_Reduce}).
+
+\subsection{Implementación serial y líneas de código}
 En \texttt{T3/integration/src/trajectories\_mpi.cpp} (reutiliza
 \texttt{T2/common/lindblad.hpp} para el modelo y \texttt{matvec}). El estado
-inicial es el estado puro $\ket{0}$; la referencia de relajación es el Gibbs del
-baño. Cada trayectoria usa un generador \texttt{mt19937\_64} sembrado con su
-índice \emph{global}, lo que hace el resultado \textbf{reproducible e
-independiente del número de rangos}.
+inicial es el puro $\ket{0}$ y la referencia el Gibbs del baño. Cada trayectoria
+usa un generador \texttt{mt19937\_64} sembrado con su índice \emph{global}, lo que
+hace el resultado \textbf{reproducible e independiente del número de rangos}. El
+Paso~2 (no-salto vs salto) es literalmente:
+
+\begin{lstlisting}[language=C++,caption={Decisión determinista/salto por trayectoria (\texttt{trajectories\_mpi.cpp}). \texttt{psip} es el estado tras el paso RK4 de $H_{\mathrm{eff}}$; \texttt{norm2}$=\|\psi'\|^2$.},label={lst:t3_jump}]
+double dp = 1.0 - norm2;                              // probabilidad de salto
+if (U(rng) < dp) {                                    // --- SALTO ---
+    /* elegir canal mu con prob ~ ||L_mu psi||^2 ... */
+    std::vector<cd> Lp = matvec(Ls[mu], psi, d);
+    for (int a = 0; a < d; ++a) psi[a] = Lp[a] / nn;  // psi <- L_mu psi / ||.||
+} else {                                              // --- NO salto: renormalizar ---
+    double inv = 1.0 / std::sqrt(norm2);
+    for (int a = 0; a < d; ++a) psi[a] = psip[a] * inv;
+}
+\end{lstlisting}
+
+\subsection{Las llamadas de paralelización (MPI)}
+El paralelismo es de \emph{tareas}: cada rango calcula su lote de trayectorias sin
+comunicación, y una sola reducción promedia. Las tres líneas MPI que estructuran
+todo el cálculo son el arranque, el reparto y la reducción final:
+
+\begin{lstlisting}[language=C++,caption={Esqueleto MPI de \texttt{trajectories\_mpi.cpp}: arranque e identificación del rango, reparto balanceado de las $M$ trayectorias entre rangos (sin comunicación), y la \emph{única} operación colectiva \texttt{MPI\_Reduce} que suma los acumuladores en el rango 0 (Paso~3, el promedio).},label={lst:t3_mpi}]
+MPI_Init(&argc, &argv);                       // arranque del entorno MPI
+MPI_Comm_rank(MPI_COMM_WORLD, &rank);         // id de este rango
+MPI_Comm_size(MPI_COMM_WORLD, &size);         // numero total de rangos
+// ... reparto balanceado de las M trayectorias (embarrassingly parallel):
+int per = M / size, rem = M % size;
+int my_M = per + (rank < rem ? 1 : 0);        // cuantas calcula este rango
+int my_start = rank * per + std::min(rank, rem);
+// ... cada rango integra sus my_M trayectorias en un acumulador local 'acc' ...
+// UNICA comunicacion: sumar los acumuladores locales -> rho(t) en el rango 0
+MPI_Reduce(reinterpret_cast<double*>(acc.data()),
+           rank == 0 ? reinterpret_cast<double*>(glob.data()) : nullptr,
+           (int)(2 * acc.size()), MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
+\end{lstlisting}
 
 \subsection{Justificación de la paralelización: MPI}
 El patrón de cómputo es radicalmente distinto al de la evolución temporal (T2):
