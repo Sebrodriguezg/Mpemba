@@ -174,10 +174,34 @@ $M=8000$ el resultado coincide con el exacto con una diferencia de $\sim0{,}002$
 \includegraphics[width=\textwidth]{../../T3/integration/results/fig_t3_relax.png}
 \end{minipage}
 \caption{Izquierda: convergencia estadística $M^{-1/2}$ del promedio de
-trayectorias. Derecha: curva de relajación $D_{HS}(t)$ para $N=8$ ($d=256$,
-$M=4000$), un sistema en el que el método de trayectorias usa vectores de $256$
-componentes en lugar de operadores densidad de $256^2$.}
+trayectorias. Derecha: curva de relajación $D_{HS}(t)$ para $N=7$ ($d=128$,
+$M=4000$), medida al \textbf{estado estacionario verdadero} $\rss$ (por eso baja a
+$0$); el método de trayectorias usa vectores de $128$ componentes en lugar de
+operadores densidad de $128^2$.}
 \label{fig:t3_error}
+\end{figure}
+
+\subsection{El efecto Mpemba: cruce de curvas}
+También el método estocástico captura el efecto Mpemba. La
+Figura~\ref{fig:t3_mpemba} promedia $M=4000$ trayectorias para dos preparaciones
+\emph{puras} del mismo Ising disipativo: $\ket{+}^{\otimes N}$ (parte lejos) y
+$\ket{0}^{\otimes N}$ (parte cerca), midiendo $D_{HS}$ al estado estacionario
+verdadero $\rss$. Pese al ruido Monte Carlo ($\propto M^{-1/2}$), el cruce es
+nítido: la curva que parte lejos \textbf{adelanta} a la otra en $t^*\approx0{,}75$,
+consistente con el $t^*\approx0{,}69$ de los métodos deterministas (T2) dentro del
+error estadístico. Son estados puros (no térmicos) que ilustran el mecanismo
+geométrico: el método de trayectorias, ideal para muchos cuerpos, reproduce la
+misma física del cruce.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.72\textwidth]{../../T3/integration/results/fig_t3_mpemba.png}
+\caption{Efecto Mpemba por trayectorias cuánticas (Ising disipativo, $N=5$,
+$M=4000$). $D_{HS}(t)$ a $\rss$ para $\ket{+}^{\otimes N}$ (roja, lejos) y
+$\ket{0}^{\otimes N}$ (azul, cerca): la roja cruza a la azul en
+$t^*\approx0{,}75$. El ruido del suelo a tiempos largos es el error estadístico
+$M^{-1/2}$ del Monte Carlo.}
+\label{fig:t3_mpemba}
 \end{figure}
 
 \paragraph{Conclusión del método de trayectorias.}

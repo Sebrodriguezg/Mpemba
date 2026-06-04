@@ -121,7 +121,7 @@ def fig_relax():
     fig, ax = plt.subplots(figsize=(6.2, 4))
     ax.semilogy(t, D, lw=1.8)
     ax.set_xlabel("t"); ax.set_ylabel(r"$D_{HS}(\rho_t \| \rho_{ss})$")
-    ax.set_title("Relajacion (RK4 directo, N=7, preparacion $T_0$=5 a bano $T$=0.8)")
+    ax.set_title("Relajacion (RK4 directo, N=7, $T_0$=5 al estacionario verdadero)")
     ax.grid(alpha=0.3, which="both")
     fig.tight_layout(); fig.savefig(os.path.join(RES, "fig_t2a_relax.png"), dpi=140)
 

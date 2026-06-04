@@ -186,6 +186,25 @@ generadores dependientes del tiempo.
 \centering
 \includegraphics[width=0.6\textwidth]{../../T2/b_accion_exponencial/results/fig_t2b_relax.png}
 \caption{Relajación $D_{HS}(t)$ por Krylov con pasos grandes $\tau=0{,}25$
-($N=7$).}
+($N=7$), medida al \textbf{estado estacionario verdadero} $\rss$ (núcleo de
+$\Lop$): por eso baja a $0$.}
 \label{fig:t2b_relax}
+\end{figure}
+
+\subsection{El efecto Mpemba: cruce de curvas}
+El método de Krylov reproduce el efecto Mpemba con idéntica física que RK4 (ambos
+resuelven la misma ecuación maestra). La Figura~\ref{fig:t2b_mpemba} evoluciona por
+Krylov dos preparaciones del mismo Ising disipativo: $\ket{+}^{\otimes N}$ (parte
+lejos) y $\ket{0}^{\otimes N}$ (parte cerca), midiendo la distancia al estado
+estacionario verdadero $\rss$. La que parte lejos \textbf{adelanta} a la otra en
+$t^*\approx0{,}69$ —el mismo $t^*$ que da RK4 (\S\ref{sec:t2a}), confirmando que el
+cruce es físico y no del integrador.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.72\textwidth]{../../T2/b_accion_exponencial/results/fig_t2b_mpemba.png}
+\caption{Efecto Mpemba por Krylov (Ising disipativo, $N=5$). $D_{HS}(t)$ a $\rss$
+para $\ket{+}^{\otimes N}$ (roja, lejos) y $\ket{0}^{\otimes N}$ (azul, cerca): la
+roja cruza a la azul en $t^*\approx0{,}69$, idéntico al de RK4.}
+\label{fig:t2b_mpemba}
 \end{figure}

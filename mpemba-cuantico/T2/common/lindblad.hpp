@@ -166,6 +166,29 @@ inline Mat gibbs_state(const Mat& H, double T, int d) {
     return scaled(G, 1.0 / trace(G, d));
 }
 
+// ---------------------------------------------------------------------
+//  Estado estacionario VERDADERO (NESS): nucleo de L,  L[rho_ss]=0.
+//  Con canales sigma^pm locales, el disipador NO lleva a Gibbs(H): el
+//  estacionario real es un estado de no-equilibrio. Lo obtenemos
+//  evolviendo el maximamente mezclado un tiempo largo (matrix-free, RK4)
+//  hasta que ||L[rho]|| es despreciable. Es la referencia correcta de
+//  relajacion: solo asi D(rho_t || rho_ss) -> 0.
+// ---------------------------------------------------------------------
+inline Mat steady_state(const Mat& H, const std::vector<Mat>& Ls, const std::vector<Mat>& Lds,
+                        const std::vector<Mat>& LdL, int d, double t_max = 20.0, double dt = 0.1) {
+    Mat rho(d * d, cd(0, 0));
+    for (int i = 0; i < d; ++i) rho[IDX(i, i, d)] = 1.0 / d;     // maximamente mezclado
+    int nst = (int)std::ceil(t_max / dt);
+    for (int s = 0; s < nst; ++s) {
+        Mat k1 = apply_lindblad(H, Ls, Lds, LdL, rho, d);
+        Mat a2 = rho; axpy(a2, k1, 0.5 * dt); Mat k2 = apply_lindblad(H, Ls, Lds, LdL, a2, d);
+        Mat a3 = rho; axpy(a3, k2, 0.5 * dt); Mat k3 = apply_lindblad(H, Ls, Lds, LdL, a3, d);
+        Mat a4 = rho; axpy(a4, k3, dt);       Mat k4 = apply_lindblad(H, Ls, Lds, LdL, a4, d);
+        for (int i = 0; i < d * d; ++i) rho[i] += dt * (k1[i] + 2.0*k2[i] + 2.0*k3[i] + k4[i]) / 6.0;
+    }
+    return scaled(rho, 1.0 / trace(rho, d));   // re-normaliza traza por deriva numerica
+}
+
 inline double d_hs(const Mat& rho, const Mat& rss, int d) {
     Mat diff(d * d);
     for (int i = 0; i < d * d; ++i) diff[i] = rho[i] - rss[i];

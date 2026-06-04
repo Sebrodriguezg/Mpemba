@@ -47,10 +47,11 @@ int main(int argc, char** argv) {
     build_ising(N, J, h, gamma, Tbath, H, Ls, d);
     std::vector<Mat> Lds, LdL; precompute(Ls, d, Lds, LdL);
 
-    // Referencia de relajacion = estado de Gibbs del bano (objetivo termico del
-    // disipador), calculado por tiempo imaginario (barato). Preparacion inicial:
-    // estado de Gibbs a la temperatura T0 (mas caliente).
-    Mat rho_ss = gibbs_state(H, Tbath, d);
+    // Referencia de relajacion = estado estacionario VERDADERO (nucleo de L),
+    // obtenido por evolucion larga (no Gibbs del bano: los canales sigma^pm
+    // locales no llevan a Gibbs(H)). Solo asi D_HS(rho_t||rho_ss) -> 0.
+    // Preparacion inicial: estado de Gibbs a la temperatura T0 (mas caliente).
+    Mat rho_ss = steady_state(H, Ls, Lds, LdL, d);
     Mat rho    = gibbs_state(H, T0, d);
 
     int n_steps = (int)std::ceil(t_max / dt);

@@ -100,7 +100,8 @@ int main(int argc, char** argv) {
     build_ising(N, J, h, gamma, Tbath, H, Ls, d);
     std::vector<Mat> Lds, LdL; precompute(Ls, d, Lds, LdL);
 
-    Mat rho_ss = gibbs_state(H, Tbath, d);
+    // referencia = estado estacionario VERDADERO (nucleo de L), no Gibbs del bano
+    Mat rho_ss = steady_state(H, Ls, Lds, LdL, d);
     Mat rho    = gibbs_state(H, T0, d);
 
     int n_chunks = (int)std::ceil(t_max / tau);

@@ -184,7 +184,8 @@ tiempo fijo decae como $\Delta t^4$, confirmando el \textbf{orden 4} del RK4
 \end{minipage}
 \caption{Izquierda: convergencia de orden 4 del RK4 frente a la solución exacta.
 Derecha: curva de relajación $D_{HS}(t)$ producida por el método (preparación
-caliente $T_0=5$ relajando al baño $T=0{,}8$).}
+$T_0=5$ relajando al \textbf{estado estacionario verdadero} $\rss$; baja a $0$
+porque la referencia es el núcleo de $\Lop$, no el Gibbs del baño).}
 \label{fig:t2a_convergence}
 \end{figure}
 
@@ -201,6 +202,31 @@ trayectorias (\S\ref{sec:t3}) en el régimen de muchos cuerpos.
 \caption{Coste del método con el tamaño del sistema (8 hilos). (a) tiempo total;
 (b) tiempo por paso frente a la referencia $\propto d^3$.}
 \label{fig:t2a_size}
+\end{figure}
+
+\subsection{El efecto Mpemba: cruce de curvas}
+El objetivo físico último es \emph{ver} el efecto Mpemba: una preparación que parte
+\textbf{más lejos} del estado estacionario lo \textbf{alcanza antes} que otra que
+parte más cerca. La Figura~\ref{fig:t2a_mpemba} lo muestra integrando con RK4 dos
+preparaciones del mismo modelo de Ising disipativo:
+$\ket{+}^{\otimes N}$ (parte lejos, $D_0\approx0{,}99$) y $\ket{0}^{\otimes N}$
+(parte cerca, $D_0\approx0{,}84$). La distancia se mide al \textbf{estado
+estacionario verdadero} $\rss$ (núcleo de $\Lop$, $\Lop[\rss]=0$; \emph{no} el
+Gibbs del baño, que con canales $\sigma^\pm$ locales no es estacionario). La curva
+que parte lejos cae más rápido y \textbf{cruza} a la otra en
+$t^*\approx0{,}69$, tras lo cual permanece por debajo: ahí está el efecto.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.72\textwidth]{../../T2/a_integracion_directa/results/fig_t2a_mpemba.png}
+\caption{Efecto Mpemba por RK4 (Ising disipativo, $N=5$). $D_{HS}(t)$ al estado
+estacionario verdadero para dos preparaciones: $\ket{+}^{\otimes N}$ (roja, parte
+lejos) y $\ket{0}^{\otimes N}$ (azul, parte cerca). La roja adelanta a la azul en
+$t^*\approx0{,}69$ (línea verde). El mecanismo es \emph{geométrico-espectral}: la
+preparación que parte lejos tiene menor solapamiento con el modo lento, así que
+decae a la tasa rápida y sobrepasa a la otra (no son estados térmicos $T_0$, sino
+estados producto que ilustran el mecanismo de la \S\ref{sec:t2a}).}
+\label{fig:t2a_mpemba}
 \end{figure}
 
 \paragraph{Conclusión del método (a).}

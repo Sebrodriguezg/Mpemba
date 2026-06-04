@@ -52,7 +52,12 @@ int main(int argc, char** argv) {
     std::vector<Mat> Lds, LdL; precompute(Ls, d, Lds, LdL);
     Mat Heff = H;
     for (auto& g : LdL) for (int i = 0; i < d * d; ++i) Heff[i] += cd(0, -0.5) * g[i];
-    Mat rho_ss = gibbs_state(H, Tbath, d);
+    // referencia = estado estacionario VERDADERO (nucleo de L), no Gibbs del bano.
+    // Lo calcula SOLO el rango 0 (OpenMP) y lo difunde: evita que los P rangos lo
+    // recomputen redundantemente y se sobre-suscriban los nucleos.
+    Mat rho_ss(d * d, cd(0, 0));
+    if (rank == 0) rho_ss = steady_state(H, Ls, Lds, LdL, d);
+    MPI_Bcast(reinterpret_cast<double*>(rho_ss.data()), 2 * d * d, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
     int n_steps = (int)std::ceil(t_max / dt);
     std::vector<int> log_steps;
