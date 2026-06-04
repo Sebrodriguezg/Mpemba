@@ -216,12 +216,18 @@ espectral exacta \cite{Carollo2021,LiYang2026,Chattopadhyay2026}:
 \begin{equation}
 \boxed{\;
 \rho_t=e^{t\Lop}[\rho_0]
-=\rss+\sum_{k=2}^{d^2}\, e^{\lambda_k t}\,
-\underbrace{\Tr\!\big(\hat l_k^{\dagger}\rho_0\big)}_{\displaystyle a_k\ \text{(solapamiento inicial)}}\,
-\hat r_k \;}
+=\rss+\sum_{k=2}^{d^2}\, a_k\, e^{\lambda_k t}\,\hat r_k \;}
 \label{eq:spectral}
 \end{equation}
-Cada $\hat r_k$ ($k\ge2$) es un \emph{modo de excitación} que decae con tasa $|\!\operatorname{Re}(\lambda_k)|$.
+donde el coeficiente
+\begin{equation}
+a_k\equiv\Tr\!\big(\hat l_k^{\dagger}\rho_0\big)
+\label{eq:overlap}
+\end{equation}
+es el \emph{solapamiento inicial} del estado $\rho_0$ con el $k$-ésimo modo
+(obtenido proyectando $\rho_0=\sum_k a_k\hat r_k$ con la biortonormalidad
+\eqref{eq:biorth}). Cada $\hat r_k$ ($k\ge2$) es un \emph{modo de excitación} que
+decae con tasa $|\!\operatorname{Re}(\lambda_k)|$.
 Ordenamos los autovalores por parte real creciente en módulo,
 \begin{equation}
 0=|\operatorname{Re}(\lambda_1)| < |\operatorname{Re}(\lambda_2)| \le |\operatorname{Re}(\lambda_3)| \le\cdots,
