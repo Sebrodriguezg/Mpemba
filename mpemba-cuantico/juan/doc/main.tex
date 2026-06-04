@@ -1,0 +1,93 @@
+\documentclass[11pt,a4paper]{report}
+
+% ===================== PAQUETES =====================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,activeacute]{babel}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm,headheight=14pt]{geometry}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{physics}
+\usepackage{bm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,
+            urlcolor=blue!50!black,linktoc=all,
+            pdftitle={Efecto Mpemba cuantico: tareas T1 y T3 en HPC},
+            pdfauthor={Juan}}
+\usepackage[capitalise,spanish]{cleveref}
+
+% --- operadores ---
+\newcommand{\Lop}{\mathcal{L}}
+\newcommand{\rss}{\rho_{\mathrm{ss}}}
+\renewcommand{\Re}{\operatorname{Re}}
+
+\newtheorem{definition}{Definición}[chapter]
+\newtheorem{remark}{Observación}[chapter]
+
+% --- caja "Idea central" ---
+\newcommand{\ideacentral}[1]{%
+  \par\vspace{0.4em}
+  \begin{center}
+  \fbox{\begin{minipage}{0.95\linewidth}\small
+  \textbf{Idea central.}\; #1
+  \end{minipage}}
+  \end{center}
+  \vspace{0.3em}}
+
+% --- estilo de listados ---
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codegreen}{rgb}{0.1,0.5,0.1}
+\definecolor{codeblue}{rgb}{0.1,0.2,0.6}
+\definecolor{codered}{rgb}{0.7,0.1,0.1}
+\definecolor{codebg}{rgb}{0.97,0.97,0.97}
+\lstdefinestyle{code}{
+    backgroundcolor=\color{codebg},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{codeblue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codered},
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true, captionpos=b, keepspaces=true,
+    numbers=left, numbersep=5pt, showstringspaces=false, tabsize=2
+}
+\lstset{style=code}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\leftmark}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ===================== TÍTULO =====================
+\title{
+    {\Huge\bfseries El efecto Mpemba cuántico en HPC}\\[0.4cm]
+    {\Large Tareas computacionales T1 y T3: modos lentos del Liouvilliano,\\
+     trayectorias cuánticas y redes tensoriales}\\[0.3cm]
+    {\large \textit{Implementación serial y paralela (MPI + OpenMP), con validación y escalado}}
+}
+\author{Juan \\ \textit{Sistemas Distribuidos 2026}}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\input{chapters/01_introduccion}
+\input{chapters/02_T1_modos_lentos}
+\input{chapters/03_T3a_trayectorias}
+\input{chapters/04_T3b_redes_tensoriales}
+\input{chapters/05_conclusiones}
+
+\end{document}

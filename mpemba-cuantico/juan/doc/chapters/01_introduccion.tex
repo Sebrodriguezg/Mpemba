@@ -1,0 +1,148 @@
+\chapter{Introducción: del Mpemba clásico al cuántico}
+\label{ch:intro}
+
+\section{El efecto Mpemba clásico (macroscópico)}
+
+La observación de que, bajo condiciones idénticas de enfriamiento, una muestra de
+agua inicialmente más caliente puede congelarse antes que una más fría fue
+documentada por Mpemba y Osborne (1969). Durante décadas el fenómeno fue
+controvertido por depender de detalles experimentales difíciles de controlar
+(convección, evaporación, sobreenfriamiento, gases disueltos). El cambio de
+paradigma llegó al reconocer que el ``efecto Mpemba'' no es una propiedad del
+agua, sino una propiedad genérica de la \emph{relajación fuera del equilibrio}:
+puede definirse de forma limpia en cualquier sistema cuya dinámica admita un
+estado estacionario único y una noción de ``distancia al equilibrio''.
+
+En el lenguaje markoviano clásico (Lu \& Raz, 2017), un sistema con
+distribución de probabilidad $\bm{p}(t)$ relaja según $\dot{\bm{p}} = R\,\bm{p}$
+hacia el equilibrio $\bm{\pi}$. La descomposición espectral de la matriz de tasas
+$R$ controla las escalas de relajación, y el efecto Mpemba aparece cuando la
+preparación caliente tiene un \emph{solapamiento anómalamente pequeño} con el
+modo lento de $R$: relaja gobernada por modos rápidos y adelanta a la
+preparación fría. Esta reformulación abstracta tuvo dos consecuencias: permitió
+observar el efecto en plataformas controladas (fluidos granulares, coloides en
+trampas ópticas, vidrios de espín) y abrió la puerta a su análogo cuántico.
+
+\section{El efecto Mpemba cuántico}
+
+En un sistema cuántico abierto markoviano la dinámica del operador densidad
+$\rho$ está gobernada por la ecuación maestra de Gorini--Kossakowski--Sudarshan--Lindblad
+(GKSL):
+\begin{equation}
+    \frac{\dd\rho}{\dd t} = \Lop[\rho]
+    = -i[H,\rho] + \sum_{\mu}\left( L_\mu\rho L_\mu^\dagger
+      - \tfrac{1}{2}\{L_\mu^\dagger L_\mu, \rho\}\right),
+    \label{eq:gksl}
+\end{equation}
+con $\hbar=1$. El generador lineal $\Lop$ (el \emph{Liouvilliano}) es completamente
+positivo y preserva la traza, y su espectro determina las escalas de relajación.
+Suponiendo $\Lop$ diagonalizable, la dinámica admite la representación espectral
+\begin{equation}
+    \rho_t = \rss + \sum_{k\ge 2} e^{\lambda_k t}\,
+             \underbrace{\Tr(\hat l_k^\dagger \rho_0)}_{a_k}\,\hat r_k,
+    \label{eq:spectral}
+\end{equation}
+donde $\lambda_k$ son los autovalores de $\Lop$ (con $\Re\lambda_k\le 0$,
+$\lambda_1=0$ el estado estacionario), y $\hat r_k$, $\hat l_k$ los autooperadores
+derecho e izquierdo. El \textbf{efecto Mpemba cuántico} (QMpE) ocurre cuando una
+preparación más alejada del equilibrio relaja antes porque su solapamiento $a_2$
+con el \emph{modo lento} $\hat r_2$ es anómalamente pequeño (o nulo, en el caso
+``fuerte'' $a_2=0$). El Liouvilliano es genéricamente \emph{no normal}
+($\Lop\Lop^\dagger\neq\Lop^\dagger\Lop$): sus autooperadores no son ortogonales, y
+es esa asimetría la que hace posible el efecto.
+
+\section{Por qué exige cómputo de alto rendimiento}
+
+El interés del QMpE no es solo conceptual: permite acelerar exponencialmente la
+convergencia al estacionario mediante una preparación adecuada, con aplicaciones
+en inicialización de qubits y termometría cuántica. La contrapartida es el coste:
+para $N$ qubits, el espacio de operadores escala como $d^2 = 4^N$, de modo que el
+Liouvilliano vive en dimensión $4^N\times 4^N$. La diagonalización densa cuesta
+$\mathcal{O}(d^6)=\mathcal{O}(64^N)$ y es inviable más allá de $N\approx 6$. Esto
+motiva una formulación numérica orientada a HPC, que el informe base descompone en
+tres tareas computacionales (\S 7.3):
+
+\begin{itemize}
+  \item \textbf{T1 --- Espectro y modos lentos.} Extraer los pocos autovalores de
+  $\Lop$ más cercanos a $0$ ($\lambda_2,\lambda_3$) y sus autooperadores, para
+  diagnosticar el efecto. Problema de autovalores \emph{interior}.
+  \item \textbf{T3a --- Trayectorias cuánticas.} Régimen de muchos cuerpos por
+  saltos cuánticos: propagar vectores de estado $\ket{\psi}\in\mathbb{C}^d$ en vez
+  del operador densidad ($\mathbb{C}^{d\times d}$). Reduce la memoria de $4^N$ a
+  $2^N$.
+  \item \textbf{T3b --- Redes tensoriales.} Representar el operador densidad como
+  un MPS en el espacio doblado y evolucionarlo con TEBD disipativo, con coste
+  polinómico en la dimensión de enlace $\chi$.
+\end{itemize}
+
+\section{Tesis del trabajo: por qué estas tres tareas}
+\label{sec:tesis}
+
+Conviene fijar desde el inicio la lógica que articula el trabajo, porque no es la
+que podría suponerse. \textbf{El objetivo no es ``demostrar'' que el efecto Mpemba
+existe} ---eso está establecido teórica y experimentalmente en la literatura
+citada. El objetivo, siguiendo al informe base, es \emph{migrar la idea al régimen
+cuántico construyendo las herramientas numéricas que permiten verificar y explotar
+el QMpE en HPC}.
+
+La clave está en una observación estructural: el QMpE es, en su núcleo, un
+fenómeno de \emph{geometría espectral} de un generador no normal
+(\cref{eq:gksl,eq:spectral}). Todo el fenómeno está codificado en dos objetos:
+\begin{enumerate}
+  \item la \textbf{estructura de relajación} ---los modos lentos $\lambda_2,\hat r_2,
+  \hat l_2$ y los solapamientos $a_k=\Tr(\hat l_k^\dagger\rho_0)$--- cuyo valor
+  \emph{predice} si una preparación puede exhibir el efecto ($a_2\!\approx\!0$ es
+  la condición de Mpemba fuerte);
+  \item la \textbf{dinámica de relajación} ---las curvas de distancia
+  $\mathcal{D}(\rho_t\|\rss)$--- cuyo cruce \emph{es} la firma del efecto.
+\end{enumerate}
+Por tanto, ``verificar y explotar el QMpE'' se reduce a poder \emph{calcular} estos
+objetos de forma correcta y escalable. Eso es exactamente lo que aportan las tres
+tareas, y de ahí su elección:
+
+\begin{itemize}
+  \item \textbf{T1} calcula la estructura de relajación (modos lentos y $a_k$): es
+  el \emph{diagnóstico} que predice el efecto. Pero requiere el Liouvilliano
+  explícito, viable solo en pocos cuerpos.
+  \item \textbf{T3a} y \textbf{T3b} calculan la dinámica de relajación en el
+  régimen de \emph{muchos cuerpos} ---donde el fenómeno es físicamente más rico y
+  el Liouvilliano explícito es imposible ($4^N$)--- por dos vías complementarias
+  (trayectorias y redes tensoriales).
+\end{itemize}
+
+En consecuencia, \emph{cumplir} cada tarea significa demostrar dos cosas con datos:
+(i) que el cálculo reproduce la física exacta (\textbf{verificación}, contra el
+oráculo), y (ii) que escala en paralelo (\textbf{habilitación para explotar}, que
+es el aporte de Sistemas Distribuidos). Como se mostrará, los datos lo confirman:
+T1 extrae los modos lentos con error $\le10^{-5}$ y con aceleración algorítmica
+\emph{faster-than-the-clock} ($8.8\times$); T3a reproduce la ecuación maestra con
+la ley $M^{-1/2}$ y escala casi idealmente; y T3b converge al exacto
+($\sim10^{-7}$) alcanzando $N=32$. La cadena queda así cerrada: las primitivas
+que predicen y simulan el QMpE existen, son correctas y son escalables.
+
+\section{Alcance y objetivos de este trabajo}
+
+Este documento aborda las tareas \textbf{T1} y \textbf{T3} (a y b). Para cada una
+se presenta: (i) el marco teórico, (ii) el método numérico y su discretización,
+(iii) la implementación \emph{serial}, (iv) la justificación de la estrategia de
+paralelización, y (v) la comparación y resultados (validación contra soluciones
+exactas y escalado paralelo). La implementación es \emph{híbrida}: un núcleo de
+referencia en Python (validado a precisión de máquina) y núcleos paralelos en
+C++ con MPI + OpenMP (T1, T3a) y en Python con paralelismo de hilos (T3b). Todas
+las cifras de validación y escalado de este documento provienen de ejecuciones
+reales del código incluido, sobre la cadena de Ising transversa disipativa
+\begin{equation}
+    H = -J\sum_{i} Z_i Z_{i+1} - h\sum_i X_i, \qquad
+    L_i^{\downarrow}=\sqrt{\gamma(\bar n+1)}\,\sigma_-^i,\quad
+    L_i^{\uparrow}=\sqrt{\gamma\bar n}\,\sigma_+^i,
+    \label{eq:ising}
+\end{equation}
+con $\bar n = (e^{2h/T}-1)^{-1}$ la ocupación de Bose del baño, que es el caso
+paradigmático de muchos cuerpos del informe (\S 6.3).
+
+\medskip
+\noindent\textbf{Validación cruzada.} Los tres métodos se contrastan contra un
+mismo \emph{oráculo}: la integración densa de \cref{eq:gksl} y la diagonalización
+completa del Liouvilliano (módulo \texttt{common/qmpe.py}), que es exacta pero
+solo viable para $N\lesssim 4$. Esto fija una base común de correctitud antes de
+escalar.

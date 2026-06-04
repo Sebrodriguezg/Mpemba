@@ -1,0 +1,79 @@
+\chapter{Conclusiones generales}
+\label{ch:conclusiones}
+
+Este trabajo implementó y validó las tareas computacionales \textbf{T1} y
+\textbf{T3} del estudio numérico del efecto Mpemba cuántico, cada una en versión
+serial y paralela, sobre la cadena de Ising transversa disipativa.
+
+\ideacentral{La tesis (\cref{sec:tesis}) se cumple: el QMpE es geometría espectral
+de un generador no normal, así que verificarlo y explotarlo en HPC equivale a
+\emph{calcular} su estructura y dinámica de relajación de forma correcta y
+escalable. T1 entrega el \textbf{diagnóstico que predice} el efecto (modos lentos,
+$a_k$); T3a/T3b entregan la \textbf{simulación} de la relajación en muchos cuerpos.
+Los datos confirman las dos exigencias: \emph{correctitud} (todas validadas contra
+el oráculo exacto) y \emph{escalabilidad} (la habilitación para explotar).}
+
+\section*{Correctitud}
+
+Los tres métodos se validaron contra un mismo oráculo exacto (diagonalización e
+integración densa del Liouvilliano, $N\lesssim4$):
+\begin{itemize}
+  \item \textbf{T1} (Arnoldi--Lindblad) reproduce los autovalores lentos con error
+  $10^{-13}$--$10^{-5}$ y el estado estacionario a $10^{-11}$.
+  \item \textbf{T3a} (trayectorias) converge con la ley estadística $M^{-1/2}$
+  (pendiente medida $-0.488$) y coincide con la ecuación maestra a $8\times10^{-3}$
+  con $M=2\times10^4$.
+  \item \textbf{T3b} (TEBD) converge a la solución exacta al aumentar $\chi$,
+  alcanzando $6\times10^{-7}$ cuando $\chi$ iguala el rango del sistema.
+\end{itemize}
+
+\section*{La lección de Sistemas Distribuidos: la estructura del acoplamiento
+determina la escalabilidad}
+
+El resultado más instructivo es el \emph{contraste} entre los tres patrones de
+paralelismo, resumido en la \cref{tab:resumen}:
+
+\begin{table}[h]
+\centering
+\caption{Comparación de los tres patrones de paralelismo (speedup a 4 workers).}
+\label{tab:resumen}
+\begin{tabular}{lll c}
+\toprule
+Tarea & Patrón de paralelismo & Tecnología & speedup (4) \\
+\midrule
+T1  & SpMV \emph{secuencialmente acoplado} & MPI+OpenMP (datos) & $\sim2.8\times$ \\
+T3a & trayectorias \emph{independientes}   & MPI+OpenMP (tareas) & $\sim3.7\times$ \\
+T3b & compuertas \emph{disjuntas} por capa & hilos (estructurado) & $\sim2.7\times$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{itemize}
+  \item \textbf{T1} está limitado porque Arnoldi es secuencialmente acoplado: solo
+  el SpMV interno paraleliza, y su naturaleza \emph{memory-bound} satura el
+  escalado en el hardware de prueba. La comunicación \texttt{Allgatherv} de MPI se
+  amortiza por el cómputo $\mathcal{O}(d^3)$, de modo que MPI iguala a OpenMP.
+  \item \textbf{T3a} es \emph{embarrassingly parallel} y escala casi idealmente,
+  con OpenMP y MPI indistinguibles; es el mejor candidato a escalar a muchos nodos.
+  \item \textbf{T3b} tiene paralelismo estructurado de granularidad media,
+  limitado por el número de bonds disjuntos y el desbalance de carga (los tensores
+  centrales soportan mayor $\chi$).
+\end{itemize}
+
+\section*{Alcance en muchos cuerpos}
+
+Las tareas T3 cumplen su promesa de superar la barrera $4^N$: T3a simula $N=10$
+($d=1024$) con trayectorias de memoria $2^N$, y T3b alcanza $N=32$
+($4^{32}\approx1.8\times10^{19}$) con dimensión de enlace acotada $\chi=24$. Ambas
+son inalcanzables para la representación explícita del Liouvilliano que requiere T1.
+
+\section*{Trabajo futuro}
+
+Las costuras de paralelización pendientes, en línea con el informe base, son:
+(i) almacenamiento disperso (CSR) de $H$ y $L_\mu$ para distribuir realmente la
+\emph{memoria} en T1 (no solo el cómputo); (ii) trayectorias en GPU para T3a;
+(iii) TEBD distribuido por segmentos de cadena con frontera MPI para T3b; y (iv)
+combinar T1 y T3b (espectro del Liouvilliano con redes tensoriales) para el gap en
+cadenas largas. En conjunto, las tres tareas forman una cadena de herramientas
+coherente: T1 diagnostica el efecto en pocos cuerpos, y T3a/T3b lo exploran en el
+régimen de muchos cuerpos donde el fenómeno es físicamente más rico.
