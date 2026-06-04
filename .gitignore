@@ -8,3 +8,5 @@
 # basura del sistema
 .DS_Store
 **/.DS_Store
+# empaquetados / archivos comprimidos (se regeneran)
+*.zip
