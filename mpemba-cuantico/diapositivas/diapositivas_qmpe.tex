@@ -168,6 +168,27 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Predicción del cruce: del espectro, \emph{sin evolucionar}\J}
+  \small
+  \textbf{Dos preparaciones} (estados producto puros), misma referencia $\rss$ (NESS):
+  $\rho_A=\ket{+}^{\otimes N}$ (\cs{parte LEJOS}) y $\rho_B=\ket{0}^{\otimes N}$
+  (\cs{parte CERCA}). Con el espectro (T1: $\lambda_2,\hat l_2$) y los solapamientos
+  $a_k=\mathrm{Tr}(\hat l_k^\dagger\rho_0)$ \emph{(una traza, sin integrar)}:
+  \begin{center}\renewcommand{\arraystretch}{1.05}
+  \begin{tabular}{lcc}
+  \toprule
+  estado & $D_0$ (arranque) & $|a_2|$ (peso modo lento $\lambda_2{=}{-}0.70$) \\
+  \midrule
+  $\ket{+}^{\otimes N}$ (lejos) & \textbf{0.99} & \textbf{0.13} \\
+  $\ket{0}^{\otimes N}$ (cerca) & 0.84 & 0.50 \\
+  \bottomrule
+  \end{tabular}\end{center}
+  \begin{center}\colorbox{seb!12}{\parbox{0.93\textwidth}{\centering\small
+  $\ket{+}$ \textbf{arranca más alto} pero \textbf{pesa menos en el modo lento}
+  $\Rightarrow$ \cs{cruce garantizado}, $t^*_{\rm pred}\!\approx\!0.68$ ---
+  \emph{antes de evolucionar}. T2/T3 lo confirman.}}\end{center}
+\end{frame}
+
 % ====================================================================
 \divider{juan}{Juan}{2 · T1 — Modos lentos del Liouvilliano}
 

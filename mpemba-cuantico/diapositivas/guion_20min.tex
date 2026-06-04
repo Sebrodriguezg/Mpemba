@@ -85,6 +85,24 @@ Los tiempos suman $\approx$20:00.}}
   \item \emph{(Transición)} ``Lo primero, entonces: calcular esos autovalores. Tarea 1.''
 \end{itemize}
 
+\blk{\Jb}{1 · Predicción del cruce (\emph{sin evolucionar})}{0:50}
+\begin{itemize}
+  \item ``Antes de evolucionar nada, fijémonos en lo potente que es el espectro.
+    Definimos dos preparaciones concretas, ambas relajando al \emph{mismo} estacionario:
+    $|+\rangle^{\otimes N}$ --- todos los espines en $|+\rangle$, que parte \textbf{lejos}
+    --- y $|0\rangle^{\otimes N}$, que parte \textbf{cerca}.''
+  \item ``Con el espectro (los $\lambda_k$ y $\hat l_k$ que da T1) y los solapamientos
+    $a_k=\mathrm{Tr}(\hat l_k^\dagger\rho_0)$ --- que son \emph{una simple traza}, sin
+    integrar nada --- ya conocemos el destino de cada estado.''
+  \item ``Y los números cantan: $|+\rangle$ arranca más alto ($D_0$: 0.99 vs 0.84) pero
+    pesa \textbf{mucho menos} en el modo lento ($a_2$: 0.13 vs 0.50). Arranca alto y
+    termina bajo $\Rightarrow$ \textbf{el cruce está garantizado}, con un $t^*$ predicho
+    de $\approx0.68$.''
+  \item ``Es decir: \cs{el espectro predice el Mpemba}; las tareas de evolución (T2, T3)
+    solo lo van a \emph{confirmar} --- y son las que nos permiten llegar a muchos cuerpos
+    donde ya no se puede diagonalizar.''
+\end{itemize}
+
 \blk{\Jb}{2 · T1 Modos lentos --- Método y discretización}{1:10}
 \begin{itemize}
   \item ``Problema: el Liouvilliano es una matriz $4^N\times4^N$. Diagonalizarla en

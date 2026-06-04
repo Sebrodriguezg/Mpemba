@@ -173,6 +173,35 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}{Predicción del cruce: del espectro, \emph{sin evolucionar}\J}
+  \small
+  \textbf{Definimos dos preparaciones} (estados producto puros), ambas relajando al
+  \emph{mismo} estacionario verdadero $\rss$:
+  \begin{itemize}\small
+    \item $\rho_A=\ket{+}^{\otimes N}$, con $\ket{+}=\tfrac{1}{\sqrt2}(\ket0+\ket1)$ \;---\; \cs{parte LEJOS}.
+    \item $\rho_B=\ket{0}^{\otimes N}$ \;---\; \cs{parte CERCA}.
+  \end{itemize}
+  \smallskip
+  Con el \textbf{espectro} (de T1: $\lambda_2,\hat l_2$) y los \textbf{solapamientos}
+  $a_k=\mathrm{Tr}(\hat l_k^\dagger\rho_0)$ \,---\,\emph{solo una traza, sin integrar}---
+  ya conocemos el destino de cada estado:
+  \begin{center}\renewcommand{\arraystretch}{1.05}
+  \begin{tabular}{lcc}
+  \toprule
+  estado & $D_0$ (arranque) & $|a_2|$ \;(peso del modo lento $\lambda_2{=}{-}0.70$) \\
+  \midrule
+  $\ket{+}^{\otimes N}$ (lejos) & \textbf{0.99} & \textbf{0.13} \\
+  $\ket{0}^{\otimes N}$ (cerca) & 0.84 & 0.50 \\
+  \bottomrule
+  \end{tabular}\end{center}
+  \smallskip
+  \begin{center}\colorbox{seb!12}{\parbox{0.93\textwidth}{\centering\small
+  $\ket{+}$ \textbf{arranca más alto} ($\times1.18$) pero \textbf{pesa menos en el modo
+  lento} (asintótico $\times0.27$) $\;\Rightarrow\;$
+  \cs{cruce garantizado}, con $t^*_{\rm pred}\!\approx\!0.68$, \emph{antes de resolver
+  la dinámica}. Las tareas T2/T3 solo lo \emph{confirman}.}}\end{center}
+\end{frame}
+
 % ====================================================================
 \divider{juan}{Juan}{2 · T1 — Modos lentos del Liouvilliano}
 
