@@ -516,6 +516,28 @@ executor.map(
   \end{columns}
 \end{frame}
 
+\begin{frame}{T3b — El cruce de Mpemba (redes tensoriales)\J}
+  \begin{columns}[T]
+  \begin{column}{0.55\textwidth}
+    \centering
+    \includegraphics[width=0.92\linewidth]{juan/T3/T3b_tensor_networks/results/fig_t3b_mpemba.png}
+  \end{column}
+  \begin{column}{0.45\textwidth}
+    \small
+    También TEBD reproduce el efecto: $\ket{+}^{\otimes N}$ (parte lejos)
+    \textbf{adelanta} a $\ket{0}^{\otimes N}$ en \cs{$t^*\!\approx\!0.69$}.
+    \medskip
+
+    Idéntico a RK4/Krylov (a $\chi$ grande TEBD es exacto): \cs{el cruce es físico},
+    y aquí se obtiene con el método que escala a muchos cuerpos.
+    \medskip
+
+    {\scriptsize\textcolor{soft}{Los \textbf{cuatro} métodos de evolución
+    (RK4, Krylov, trayectorias, redes tensoriales) dan el mismo $t^*$.}}
+  \end{column}
+  \end{columns}
+\end{frame}
+
 % ====================================================================
 \divider{juan}{Juan}{7 · Conclusiones generales}
 
@@ -536,8 +558,8 @@ executor.map(
     \begin{itemize}\small
       \item Origen \emph{geométrico-espectral}: no-normalidad de $\Lop$ + criterio
         $a_2=0$ \cite{Carollo2021}.
-      \item \cs{Cruce reproducido por los 3 métodos} de evolución
-        ($t^*\!\approx\!0.69$–$0.75$), validado de forma cruzada.
+      \item \cs{Cruce reproducido por los 4 métodos} de evolución (RK4, Krylov,
+        trayectorias, redes tensoriales; $t^*\!\approx\!0.69$–$0.75$), validado de forma cruzada.
       \item Escalable a muchos cuerpos vía trayectorias y redes tensoriales.
     \end{itemize}
   \end{column}

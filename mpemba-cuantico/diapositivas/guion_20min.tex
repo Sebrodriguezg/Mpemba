@@ -1,0 +1,298 @@
+% Guion 20 min — Efecto Mpemba cuántico en HPC. Compilar: pdflatex guion_20min
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-noshorthands]{babel}
+\usepackage[margin=2.2cm]{geometry}
+\usepackage{xcolor}
+\usepackage{enumitem}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+\definecolor{juan}{RGB}{15,115,140}
+\definecolor{seb}{RGB}{205,95,25}
+\definecolor{ink}{RGB}{33,37,48}
+\definecolor{soft}{RGB}{120,125,135}
+\color{ink}
+
+\newcommand{\Jb}{\colorbox{juan}{\color{white}\bfseries\footnotesize~Juan~}}
+\newcommand{\Sb}{\colorbox{seb}{\color{white}\bfseries\footnotesize~Sebastián~}}
+\newcommand{\cj}[1]{\textcolor{juan}{\textbf{#1}}}
+\newcommand{\cs}[1]{\textcolor{seb}{\textbf{#1}}}
+\newcommand{\blk}[3]{%
+  \par\medskip\noindent #1\ \textbf{#2}\hfill\textcolor{soft}{\small #3}\par
+  \vspace{-4pt}\textcolor{soft!40}{\rule{\linewidth}{0.4pt}}\par\vspace{-2pt}}
+\setlist[itemize]{leftmargin=1.4em,itemsep=1pt,topsep=2pt}
+\pagestyle{plain}
+
+\begin{document}
+
+\begin{center}
+  {\LARGE\bfseries Guion (20 min) --- El efecto Mpemba cuántico en HPC}\\[2pt]
+  {\small\textcolor{soft}{Charla conjunta · versión extendida $\approx$20 min}}\\[6pt]
+  {\footnotesize \Jb\ \textcolor{soft}{intro · T1 · redes tensoriales · conclusiones}\qquad
+   \Sb\ \textcolor{soft}{evolución temporal · trayectorias · GPU · relevancia macro}}
+\end{center}
+\medskip\hrule\smallskip
+{\footnotesize\textcolor{soft}{Lenguaje natural. Más detalle que la versión de 10 min:
+incluye la intuición física, el razonamiento HPC y la lectura de cada figura.
+Los tiempos suman $\approx$20:00.}}
+
+% =============================================================== JUAN
+\blk{\Jb}{0 · Apertura (\emph{Título})}{0:20}
+\begin{itemize}
+  \item ``Buenas. Vamos a contar un proyecto de \textbf{computación de alto
+    rendimiento} aplicado a un fenómeno físico curioso: el \textbf{efecto Mpemba
+    cuántico}. La idea: cuatro tareas numéricas, cada una con su versión \emph{serial}
+    y \emph{paralela}, validadas contra soluciones exactas y con su estudio de escalado.''
+  \item ``Nos repartimos: en \cj{teal} lo de Juan, en \cs{naranja} lo de Sebastián.''
+\end{itemize}
+
+\blk{\Jb}{1 · De lo clásico a lo cuántico --- La anomalía}{1:10}
+\begin{itemize}
+  \item ``El efecto Mpemba clásico es contraintuitivo: bajo ciertas condiciones, el
+    agua \textbf{más caliente se congela antes} que la templada. Se observa también en
+    coloides, granulares, imanes\dots''
+  \item ``La clave \emph{no} es la temperatura en sí, sino una idea geométrica: si
+    medimos una \textbf{distancia al equilibrio}, la curva que parte \textbf{más lejos}
+    puede \textbf{cruzar} a la que parte más cerca y llegar antes. Ese \emph{cruce} es
+    la firma del efecto.''
+  \item ``Nuestra pregunta: ¿ocurre lo mismo en un sistema \textbf{cuántico abierto}?
+    Y la respuesta es sí --- y además se puede \emph{predecir} con álgebra lineal.''
+    (señalar la figura del cruce)
+\end{itemize}
+
+\blk{\Jb}{1 · Matemática: GKSL y autovalores}{1:40}
+\begin{itemize}
+  \item ``Un sistema cuántico abierto markoviano evoluciona con la \textbf{ecuación
+    GKSL}, o de Lindblad: un término coherente (conmutador con $H$) más un
+    \textbf{disipador} que modela el acoplamiento al baño.''
+  \item ``Como es \emph{lineal} en $\rho$, la reescribimos con un operador, el
+    \textbf{Liouvilliano} $\mathcal{L}$. Y aquí entra lo importante: diagonalizamos
+    $\mathcal{L}$ y obtenemos sus \textbf{autovalores} $\lambda_k$, todos con parte
+    real $\le 0$.''
+  \item ``Entonces la evolución es una \textbf{suma de modos que decaen}: cada modo
+    con su tasa $|\mathrm{Re}\,\lambda_k|$. A tiempos largos manda el \textbf{modo más
+    lento}, $\lambda_2$.''
+  \item ``El \textbf{criterio de Mpemba} es entonces puro álgebra: el peso inicial de
+    cada modo es el solapamiento $a_k=\mathrm{Tr}(l_k^\dagger\rho_0)$. Si conseguimos
+    una preparación con \cs{$a_2=0$}, esa preparación \emph{se salta el modo lento} y
+    relaja a la tasa rápida --- por eso adelanta a otra que sí lo tiene.''
+  \item ``Un detalle técnico clave: $\mathcal{L}$ es \textbf{no normal}, sus modos
+    \emph{no} son ortogonales; eso es lo que permite que una curva que parte más lejos
+    termine por debajo. Todo esto lo veremos reproducido numéricamente.''
+  \item \emph{(Transición)} ``Lo primero, entonces: calcular esos autovalores. Tarea 1.''
+\end{itemize}
+
+\blk{\Jb}{2 · T1 Modos lentos --- Método y discretización}{1:10}
+\begin{itemize}
+  \item ``Problema: el Liouvilliano es una matriz $4^N\times4^N$. Diagonalizarla en
+    denso es inviable ya para pocos espines.''
+  \item ``Solución: \textbf{Arnoldi}, pero con un truco. En vez de aplicar $\mathcal{L}$
+    (cuyos modos de interés son los \emph{interiores}, cerca de 0, difíciles para
+    Arnoldi), aplicamos el \textbf{propagador} $P=e^{\tau\mathcal{L}}$. Los modos lentos
+    de $\mathcal{L}$ se vuelven los \textbf{dominantes} de $P$, que es justo lo que
+    Arnoldi extrae primero --- lo llamamos \emph{faster than the clock}.''
+  \item ``Y la acción de $P$ es \textbf{matrix-free}: integramos $\dot V=\mathcal{L}[V]$
+    con RK4, sin formar nunca la matriz gigante.''
+\end{itemize}
+
+\blk{\Jb}{2 · T1 --- Núcleo serial\,$\vert$\,paralelo}{0:50}
+\begin{itemize}
+  \item ``El coste vive en el \textbf{producto de matrices} del SpMV. A la izquierda,
+    serial: recorremos todas las filas.''
+  \item ``A la derecha, paralelo en \textbf{dos niveles}: cada \textbf{rango MPI}
+    calcula un \emph{bloque de filas} (paralelismo de datos), y dentro \textbf{OpenMP}
+    reparte ese bloque entre hilos. Al final, \cs{MPI\_Allgatherv} reconstruye la
+    matriz completa en todos los rangos.''
+\end{itemize}
+
+\blk{\Jb}{2 · T1 --- Resultados}{0:50}
+\begin{itemize}
+  \item ``Validación: los autovalores lentos coinciden con la diagonalización densa
+    con errores de $10^{-13}$ a $10^{-5}$.''
+  \item ``Escalado $\sim2.9\times$ con OpenMP y MPI. ¿Por qué no más? Porque el SpMV
+    está \textbf{acoplado} y es \emph{memory-bound}: los hilos compiten por el ancho de
+    banda, y MPI paga la comunicación del \texttt{Allgatherv}. Es el caso \emph{menos}
+    paralelizable de los que veremos --- y es un resultado, no un fallo.''
+  \item ``Y lo importante para la historia: T1 nos da el $\lambda_2$ y el $a_2$ que
+    \textbf{determinan el cruce} de Mpemba.'' \emph{(pasa a Sebastián)}
+\end{itemize}
+
+% =============================================================== SEB
+\blk{\Sb}{3 · T2a Evolución RK4 --- Método y discretización}{1:10}
+\begin{itemize}
+  \item ``Ahora la \textbf{evolución temporal}: dado un estado inicial, queremos la
+    trayectoria $\rho(t)$ y su distancia al estacionario.''
+  \item ``Vía directa: \textbf{Runge--Kutta de orden 4} sobre $\dot\rho=\mathcal{L}[\rho]$.
+    Cuatro evaluaciones de $\mathcal{L}$ por paso, también \textbf{matrix-free}
+    (conmutadores y disipador como productos de matrices $d\times d$).''
+  \item ``¿Cómo paralelizar? Los pasos tienen \textbf{dependencia temporal estricta}:
+    $\rho_{n+1}$ necesita $\rho_n$. No se puede paralelizar \emph{entre} pasos. El
+    paralelismo está \emph{dentro} del paso, en el producto de matrices. Datos
+    regulares en un nodo $\Rightarrow$ el paradigma natural es \textbf{OpenMP}, no MPI
+    (que pagaría comunicación en cada uno de los miles de pasos).''
+\end{itemize}
+
+\blk{\Sb}{3 · T2a --- Núcleo serial\,$\vert$\,paralelo}{0:50}
+\begin{itemize}
+  \item ``El núcleo es el \texttt{matmul}. La versión paralela es \emph{una sola
+    línea} de diferencia: \cs{\#pragma omp parallel for}, que reparte las filas $i$
+    entre hilos. Son independientes, no hay condiciones de carrera.''
+  \item ``Detalle bonito de ingeniería: es el \emph{mismo} binario; cambiando la
+    variable \texttt{OMP\_NUM\_THREADS} obtenemos las curvas serie vs paralelo, sin
+    recompilar.''
+\end{itemize}
+
+\blk{\Sb}{3 · T2a --- Resultados (computacional y físico)}{0:55}
+\begin{itemize}
+  \item ``Izquierda: tiempo serie vs paralelo según el tamaño. El speedup
+    \textbf{crece con la malla} hasta $\sim4\times$, pero es \emph{sublineal}: otra vez
+    \emph{bandwidth-bound} más el coste de crear hilos en cada \texttt{matmul}.''
+  \item ``Derecha, lo físico: \textbf{aquí está el cruce}. La preparación que parte
+    lejos (roja) \textbf{adelanta} a la cercana (azul) en \cs{$t^*\approx0.69$}.
+    Validamos RK4 a orden 4 (pendiente $\approx4.04$).''
+\end{itemize}
+
+\blk{\Sb}{4 · T2b Krylov --- Método y el resultado central}{1:20}
+\begin{itemize}
+  \item ``Segunda vía para la misma evolución, más sofisticada: en vez de dar muchos
+    pasitos, aplicamos directamente la \textbf{acción del exponencial}
+    $e^{\tau\mathcal{L}}$, que es la solución exacta en un paso $\tau$.''
+  \item ``Pero $e^{\tau\mathcal{L}}$ es un objeto enorme. El truco de \textbf{Krylov}:
+    proyectamos en un subespacio pequeño (Arnoldi, $m\sim30$) y exponenciamos ahí una
+    matriz $m\times m$ trivial.''
+  \item ``Comparte el \emph{mismo} hotspot que RK4 (el \texttt{matmul}), así que la
+    paralelización OpenMP y el escalado son equivalentes.''
+  \item ``El resultado central está en esta gráfica: \textbf{a igual trabajo, Krylov es
+    unas $25\times$ más preciso} que RK4, y permite pasos de tiempo grandes siendo
+    \emph{incondicionalmente estable}. Es el método de elección para llegar al
+    estacionario.''
+\end{itemize}
+
+\blk{\Sb}{4 · T2b --- El cruce}{0:35}
+\begin{itemize}
+  \item ``Y reproduce el \textbf{mismo cruce, $t^*\approx0.69$}, idéntico a RK4 --- de
+    hecho coinciden a $10^{-10}$ en la distancia final. Mensaje: el cruce es
+    \textbf{física}, no un artefacto del método numérico.''
+\end{itemize}
+
+\blk{\Sb}{5 · T3 Trayectorias --- Método y núcleo serial\,$\vert$\,paralelo}{1:10}
+\begin{itemize}
+  \item ``Hasta aquí trabajamos con $\rho$ completo, de tamaño $4^N$: inviable para
+    \textbf{muchos cuerpos}. Cambio de paradigma: \textbf{trayectorias cuánticas}
+    (Monte Carlo wavefunction).''
+  \item ``En vez de propagar $\rho$, propagamos $M$ \textbf{estados puros}
+    $|\psi\rangle$ de tamaño $2^N$ --- la raíz --- que evolucionan con un Hamiltoniano
+    efectivo y dan \textbf{saltos} estocásticos. El promedio reconstruye $\rho$.''
+  \item ``La gran ventaja para HPC: cada trayectoria es \textbf{independiente}
+    --- \emph{embarrassingly parallel}. MPI reparte las $M$ entre rangos, cada uno
+    calcula su lote \emph{sin comunicación}, y \textbf{una sola \cs{MPI\_Reduce}} al
+    final promedia.''
+\end{itemize}
+
+\blk{\Sb}{5 · T3 --- Resultados}{0:50}
+\begin{itemize}
+  \item ``Y se nota: el escalado es \textbf{casi ideal, $\sim5.6\times$ y constante}
+    al crecer el trabajo --- en claro contraste con el OpenMP sublineal de T2. Ese
+    contraste es \emph{el mensaje HPC de la charla}: \textbf{el patrón de cómputo dicta
+    el paradigma}, no una preferencia.''
+  \item ``La precisión converge como $M^{-1/2}$. Y --- otra vez --- el \textbf{cruce de
+    Mpemba}, ahora con el método estocástico, en \cs{$t^*\approx0.75$} (la pequeña
+    diferencia es el ruido Monte Carlo).''
+\end{itemize}
+
+\blk{\Sb}{5 · CUDA T4 --- GPU}{0:55}
+\begin{itemize}
+  \item ``Como bonus, el \textbf{tercer escalón} de paralelización para la evolución
+    densa: la GPU. El producto de matrices denso es el caso ideal para cuBLAS.''
+  \item ``En una \textbf{T4} de Colab: pierde para tamaños pequeños (overhead de lanzar
+    kernels) pero \textbf{gana $\sim5\times$} en cuanto la malla crece --- para $N=9$,
+    de 943 segundos en CPU a 190 en GPU. El producto puro llega a 250 GFLOP/s.''
+  \item ``Y validación triple: GPU $=$ CPU $=$ C++. El notebook ejecutado y los
+    resultados están en el repositorio.'' \emph{(pasa a Juan)}
+\end{itemize}
+
+\blk{\Jb}{6 · T3b Redes tensoriales --- Método y discretización}{1:10}
+\begin{itemize}
+  \item ``La otra gran ruta a muchos cuerpos, complementaria a las trayectorias:
+    \textbf{redes tensoriales}.''
+  \item ``Escribimos la matriz densidad como un \textbf{superket} en forma de MPS ---
+    una cadena de tensores, con dimensión física 4 por sitio. La ecuación maestra se
+    integra con \textbf{TEBD}: trotterizamos $e^{dt\,\mathcal{L}}$ en \textbf{compuertas
+    locales} de dos sitios y \textbf{truncamos} el enlace a $\chi$ con una SVD.''
+  \item ``Resultado: coste \textbf{polinómico en $\chi$}, no exponencial en $N$. Eso
+    abre tamaños imposibles en denso.''
+  \item ``Paralelización por \textbf{hilos}: en una capa de Trotter, los bonds pares
+    (o impares) son \emph{disjuntos}; sus SVD son independientes. Y numpy
+    \textbf{libera el GIL} durante la SVD, así que los hilos escalan de verdad.''
+\end{itemize}
+
+\blk{\Jb}{6 · T3b --- Núcleo serial\,$\vert$\,paralelo}{0:45}
+\begin{itemize}
+  \item ``Serial: un bucle que aplica las compuertas de los bonds una a una. Paralelo:
+    un \cs{executor.map} lanza las compuertas disjuntas en hilos.''
+  \item ``Es un paralelismo \textbf{estructurado} --- ni tan acoplado como el SpMV de
+    T1, ni tan libre como las trayectorias. Queda en medio, y eso se ve en el escalado.''
+\end{itemize}
+
+\blk{\Jb}{6 · T3b --- Resultados}{0:50}
+\begin{itemize}
+  \item ``Validación: comparado con el resultado exacto a $N$ pequeño, el error
+    \textbf{cae al subir $\chi$}, hasta $6\times10^{-7}$ --- control sistemático.''
+  \item ``Escala $\sim3.6\times$ en hilos (entre T1 y las trayectorias, como
+    anticipamos). Y el alcance: llegamos a \textbf{$N=32$} --- un espacio de Hilbert de
+    $10^{19}$, absolutamente imposible en denso --- evolucionado en segundos.''
+\end{itemize}
+
+\blk{\Jb}{6 · T3b --- El cruce de Mpemba}{0:45}
+\begin{itemize}
+  \item ``Y cerramos con lo que une todo: \textbf{también las redes tensoriales
+    reproducen el cruce}. Las mismas dos preparaciones, $|+\rangle$ que parte lejos
+    adelanta a $|0\rangle$ en \cs{$t^*\approx0.69$}.''
+  \item ``Idéntico a RK4 y Krylov, porque a $\chi$ grande TEBD es exacto. Es decir:
+    \textbf{los cuatro métodos de evolución} --- RK4, Krylov, trayectorias y redes
+    tensoriales --- dan \emph{el mismo} cruce. Validación cruzada total.''
+\end{itemize}
+
+\blk{\Jb}{7 · Conclusiones generales}{1:20}
+\begin{itemize}
+  \item ``\textbf{HPC.} El mensaje central: el \emph{patrón de cómputo} determina la
+    escalabilidad. Lo vimos como un espectro:
+    \emph{acoplado} (T1, SpMV, $\sim3\times$) $<$ \emph{estructurado} (T3b, redes
+    tensoriales, $\sim3.6\times$) $<$ \emph{independiente} (trayectorias, $\sim5.6\times$
+    casi ideal). Y la evolución densa, además, vuela en GPU.''
+  \item ``Cada paradigma --- OpenMP, MPI, hilos, CUDA --- lo elegimos por la
+    \emph{estructura del algoritmo}, no por moda.''
+  \item ``\textbf{Física.} El efecto Mpemba cuántico tiene origen
+    \textbf{geométrico-espectral}: la no-normalidad de $\mathcal{L}$ más el criterio
+    $a_2=0$. Lo \textbf{reprodujimos con los cuatro métodos} ($t^*\approx0.69$--$0.75$),
+    validados de forma cruzada, y escalado a muchos cuerpos.'' \emph{(pasa a Sebastián)}
+\end{itemize}
+
+\blk{\Sb}{8 · Relevancia en el efecto macro/meso}{1:00}
+\begin{itemize}
+  \item ``Para cerrar, por qué importa. La \textbf{firma es universal}: el mismo
+    mecanismo de \emph{geometría espectral de la relajación} explica el cruce desde el
+    macro clásico (agua, coloides) hasta lo cuántico. Es el mismo lenguaje matemático.''
+  \item ``Lo que devuelve el enfoque cuántico al problema clásico: un \textbf{criterio
+    operacional} --- $a_2=0$ --- y las \textbf{herramientas HPC} para \emph{predecir} y
+    \emph{diseñar} el efecto en vez de buscarlo a ciegas.''
+  \item ``Con aplicaciones concretas: \textbf{termometría cuántica} y protocolos de
+    \textbf{enfriamiento acelerado}.''
+  \item ``Y esa es la idea: una anomalía vieja de la física, entendida como álgebra de
+    autovalores y llevada a HPC. Muchas gracias.'' \emph{(cierre)}
+\end{itemize}
+
+\medskip\hrule\smallskip
+\noindent\textbf{\footnotesize Notas.}
+\begin{itemize}[font=\footnotesize]\footnotesize
+  \item Énfasis recurrente: los \textbf{cuatro cruces} (T2a, T2b, T3, T3b dan el mismo
+    $t^*$) y el contraste de escalado \textbf{acoplado $<$ estructurado $<$ independiente}.
+  \item Si vas sobre tiempo: la slide CUDA es la más prescindible; las ecuaciones de la
+    slide matemática se pueden resumir.
+  \item Frase ancla: ``\textbf{el patrón de cómputo dicta el paradigma}''.
+\end{itemize}
+
+\end{document}
