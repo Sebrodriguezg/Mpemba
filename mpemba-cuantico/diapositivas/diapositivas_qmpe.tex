@@ -151,21 +151,20 @@
   \rho_t=\rss+\sum_{k\ge2}\, a_k\,e^{\lambda_k t}\,\hat r_k,\qquad
   a_k=\mathrm{Tr}(\hat l_k^\dagger\rho_0).
   \]
-  \begin{columns}[T]
-  \begin{column}{0.62\textwidth}
   \begin{itemize}\small
     \item Relajación dominada por el \cs{modo lento} $\lambda_2$ ($\tau=1/|\mathrm{Re}\,\lambda_2|$).
     \item \cs{Criterio de Mpemba (fuerte)}: si $a_2=\mathrm{Tr}(\hat l_2^\dagger\rho_0)=0$,
       la preparación \emph{salta} el modo lento y relaja a la tasa rápida $\Rightarrow$ cruce \cite{Carollo2021,Chattopadhyay2026}.
     \item No-normalidad de $\Lop$ ($\Lop\Lop^\dagger\!\neq\!\Lop^\dagger\Lop$): los modos no son ortogonales $\Rightarrow$ permite el adelantamiento.
   \end{itemize}
-  \end{column}
-  \begin{column}{0.38\textwidth}
-    \centering
-    \includegraphics[width=\linewidth]{juan/T1/results/t1_eigs.png}\\
-    {\scriptsize\textcolor{soft}{Espectro $\lambda_k$ del Liouvilliano.}}
-  \end{column}
-  \end{columns}
+\end{frame}
+
+\begin{frame}{El espectro del Liouvilliano $\Lop$\J}
+  \centering
+  \includegraphics[height=0.68\textheight]{juan/T1/results/t1_eigs.png}\\[4pt]
+  {\small Autovalores $\lambda_k$: $\lambda_1{=}0$ (estacionario $\rss$), todos con
+  $\mathrm{Re}\,\lambda_k\le0$. El \cs{modo lento} $\lambda_2$ ---el más cercano a $0$---
+  fija la relajación y controla el cruce de Mpemba.}
 \end{frame}
 
 \begin{frame}{Predicción del cruce: del espectro, \emph{sin evolucionar}\J}

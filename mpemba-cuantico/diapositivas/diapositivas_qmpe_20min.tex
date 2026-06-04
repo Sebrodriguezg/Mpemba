@@ -149,8 +149,7 @@
 \end{frame}
 
 \begin{frame}{El espectro del Liouvilliano y el criterio de Mpemba\J}
-  \begin{columns}[T]
-  \begin{column}{0.62\textwidth}\small
+  \small
   \textbf{Descomposición espectral} (autovalores $\lambda_k$, $\mathrm{Re}\,\lambda_k\le0$):
   \[
   \rho_t=\rss+\sum_{k\ge2}\, a_k\,e^{\lambda_k t}\,\hat r_k,\qquad
@@ -165,12 +164,14 @@
     \item La \textbf{no-normalidad} de $\Lop$ ($\Lop\Lop^\dagger\!\neq\!\Lop^\dagger\Lop$):
       los modos no son ortogonales $\Rightarrow$ permite el adelantamiento.
   \end{itemize}
-  \end{column}
-  \begin{column}{0.38\textwidth}\centering
-    \includegraphics[width=\linewidth]{juan/T1/results/t1_eigs.png}\\
-    {\scriptsize\textcolor{soft}{Espectro $\lambda_k$: el modo lento controla el cruce.}}
-  \end{column}
-  \end{columns}
+\end{frame}
+
+\begin{frame}{El espectro del Liouvilliano $\Lop$\J}
+  \centering
+  \includegraphics[height=0.68\textheight]{juan/T1/results/t1_eigs.png}\\[4pt]
+  {\small Autovalores $\lambda_k$ en el plano complejo: $\lambda_1{=}0$ (estacionario
+  $\rss$), todos con $\mathrm{Re}\,\lambda_k\le0$. El \cs{modo lento} $\lambda_2$ ---el
+  más cercano a $0$--- fija la escala de relajación y controla el cruce de Mpemba.}
 \end{frame}
 
 \begin{frame}{Predicción del cruce: del espectro, \emph{sin evolucionar}\J}
