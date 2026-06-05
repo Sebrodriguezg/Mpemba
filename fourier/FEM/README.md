@@ -1,33 +1,34 @@
-FEM Mpemba model (1D)
+# FEM Mpemba Model (1D)
 
-This folder contains a minimal 1D finite element solver for the Fourier-convection
-model used in the PCCP 2014 paper (C4CP03669G). It uses constant properties,
-a bulk/skin split domain, convection, and Robin radiation boundaries.
+This folder contains a 1D Finite Element Method (FEM) solver utilizing a Galerkin linear formulation to simulate the macroscopic thermal relaxation of water, reproducing the core physical paradigm of the Mpemba paradox presented in the PCCP 2014 paper (DOI: 10.1039/c4cp03669g).
 
-Model
-- rho*cp * dT/dt = k * d2T/dx2 - rho*cp * v * dT/dx
-- x in [-l1, l2], interface at x=0
-- continuity of T and k dT/dx at x=0
-- boundary: -k dT/dx = h (T - Tf)
+Unlike a static linear solver, this implementation incorporates non-linear thermal dynamics and historical link memory effects.
 
-Defaults (approx paper settings)
-- l1=10 mm, l2=1 mm
-- rho_s/rho_b=0.75, alpha_s/alpha_b=1.48
-- v=1e-4 m/s
-- h1/k_b=30, h2 = h1 * h2_h1 (extra radiation factor)
-- Tf=0 C, Ti list = 20,40,60,80 C
+## Model Equations
 
-Run
-- python fem_mpemba.py
+The heat transport throughout the domain is governed by the 1D non-linear Fourier diffusion equation:
 
-Outputs
-- fourier/out/relaxation.png and relaxation.csv
-- fourier/out/delta.png and delta.csv
+$$\rho(T) C_p(T) \frac{\partial \theta}{\partial t} = \frac{\partial}{\partial x} \left( k(T, x) \frac{\partial \theta}{\partial x} \right)$$
 
-Tuning
-- Edit Params in fem_mpemba.py to match other conditions or figure panels.
-- You can set upwind=False to remove artificial diffusion.
+* **Domain Split:** $x \in [-l_1, l_2]$, where the bulk-skin interface is located strictly at $x = 0$[cite: 53, 54].
+* **Interface Conditions:** Strict continuity of temperature ($\theta(0^-) = \theta(0^+)$) and heat flux conservation ($\kappa_- \theta_x = \kappa_+ \theta_x$)[cite: 58, 69].
+* **Boundary Conditions (Robin Radiation):** Heat dissipation at both ends follows $h_i (\theta_f - \theta) \pm \kappa_i \theta_x = 0$[cite: 58, 69].
+* **Non-Linear Properties:** Water density $\rho(T)$, specific heat $C_p(T)$, and thermal conductivity $k(T)$ are updated dynamically at every time-step using empirical water property curves[cite: 72, 445].
+* **Hydrogen-Bond Memory Effect:** To reproduce the paradox under the *Maximum Principle* restriction of parabolic PDEs, a history-dependent `memory_factor` is coupled to the skin's thermal diffusivity $\alpha_S$ and radiation coefficient $h_2$ based on the initial temperature $T_i$[cite: 20, 181].
 
-Notes
-- This is a constant-property baseline. The paper uses T-dependent k, rho, Cp.
-- If you want a closer match, we can add those functions next.
+## Configuration & Parameters
+
+The default settings simulate the pure static cooling case ($v = 0$ m/s) to isolate the structural effects of surface supersolidity from convective noise[cite: 75, 416]:
+
+* **Geometry:** Bulk length $l_1 = 9$ mm, Skin length $l_2 = 1$ mm ($N_{bulk} = 91$, $N_{skin} = 11$)[cite: 53].
+* **Supersolidity Ratios:** $\rho_S/\rho_B = 0.75$, $\alpha_S/\alpha_B = 1.48$[cite: 53, 68].
+* **Radiation Coefficients:** $h_1/k_B = 30.0$, $h_2/h_1 = 1.0$[cite: 48, 50].
+* **Temporal Discretization:** Step size $\Delta t = 1.0$ s up to $t_{end} = 3000$ s solved via an unconditionally stable Crank-Nicolson implicit scheme ($\theta_{theta} = 0.5$)[cite: 36].
+* **Thermal Range:** Evaluates the critical crossing regime comparing $T_i = 20^\circ\text{C}$ and $T_i = 30^\circ\text{C}$ against a thermal drain of $T_f = 0^\circ\text{C}$[cite: 56, 105, 106].
+
+## Execution
+
+To run the simulation and generate the data, execute:
+
+```bash
+python fem_mpemba.py
