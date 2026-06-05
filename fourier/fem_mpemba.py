@@ -1,207 +1,157 @@
 #!/usr/bin/env python3
-from dataclasses import dataclass
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
-
-@dataclass
 class Params:
-    # Geometry (m)
-    l1: float = 0.01
-    l2: float = 0.001
-    n_bulk: int = 101
-    n_skin: int = 21
+    l1: float = 0.009  # 9 mm interior
+    l2: float = 0.001  # 1 mm piel
+    n_bulk: int = 91
+    n_skin: int = 11
 
-    # Bulk material
-    rho_b: float = 1000.0
-    cp_b: float = 4181.0
-    k_b: float = 0.6
-
-    # Skin ratios
-    rho_ratio: float = 0.75
-    alpha_ratio: float = 1.48
-
-    # Flow and boundary
-    v: float = 1.0e-4
     h_kappa_ratio: float = 30.0
-    h2_h1: float = 1.0
+    h2_h1: float = 1.0  
 
-    # Time
-    dt: float = 0.5
-    t_end: float = 2000.0
-    theta: float = 0.5
-
-    # Temperatures (C)
+    dt: float = 1.0
+    t_end: float = 3000.0
+    theta: float = 0.5  # Crank-Nicolson
     t_f: float = 0.0
-    t_i_list: tuple = (20.0, 40.0, 60.0, 80.0)
-
-    # Numerics
     upwind: bool = True
 
-
-def build_mesh(params: Params) -> np.ndarray:
+def build_mesh(params: Params):
     x_bulk = np.linspace(-params.l1, 0.0, params.n_bulk, endpoint=False)
     x_skin = np.linspace(0.0, params.l2, params.n_skin)
     return np.concatenate([x_bulk, x_skin])
 
+def get_water_properties(T_celsius: float):
+    rho = 1000 * (1 - (T_celsius + 288.9414)/(508929.2 * (T_celsius + 68.12963)) * (T_celsius - 3.9863)**2)
+    cp = 4217.6 - 3.2088 * T_celsius + 0.0381 * T_celsius**2
+    k = 0.56 + 0.0018 * T_celsius - 7.0e-6 * T_celsius**2
+    return rho, cp, k
 
-def compute_materials(params: Params) -> dict:
-    rho_s = params.rho_ratio * params.rho_b
-    cp_s = params.cp_b
-    alpha_b = params.k_b / (params.rho_b * params.cp_b)
-    alpha_s = params.alpha_ratio * alpha_b
-    k_s = alpha_s * rho_s * cp_s
-    return {
-        "rho_b": params.rho_b,
-        "cp_b": params.cp_b,
-        "k_b": params.k_b,
-        "rho_s": rho_s,
-        "cp_s": cp_s,
-        "k_s": k_s,
-    }
-
-
-def assemble_matrices(x: np.ndarray, params: Params, mats: dict) -> tuple:
+def assemble_system(x: np.ndarray, T: np.ndarray, params: Params, alpha_ratio: float, rho_ratio: float, memory_factor: float):
     n = len(x)
     M = np.zeros((n, n))
     K = np.zeros((n, n))
-    C = np.zeros((n, n))
 
     for e in range(n - 1):
-        i = e
-        j = e + 1
+        i, j = e, e + 1
         h = x[j] - x[i]
         x_mid = 0.5 * (x[i] + x[j])
+        T_mid = 0.5 * (T[i] + T[j])
 
-        if x_mid < 0.0:
-            rho = mats["rho_b"]
-            cp = mats["cp_b"]
-            k = mats["k_b"]
-        else:
-            rho = mats["rho_s"]
-            cp = mats["cp_s"]
-            k = mats["k_s"]
+        rho, cp, k = get_water_properties(T_mid)
+
+        if x_mid >= 0.0:
+            rho_skin = rho * rho_ratio
+            alpha_bulk = k / (rho * cp)
+            alpha_skin = alpha_ratio * alpha_bulk * memory_factor
+            k = alpha_skin * rho_skin * cp
+            rho = rho_skin
 
         rho_cp = rho * cp
-        k_eff = k
-        if params.upwind and params.v != 0.0:
-            k_eff += 0.5 * rho_cp * abs(params.v) * h
-
         M_e = rho_cp * h / 6.0 * np.array([[2.0, 1.0], [1.0, 2.0]])
-        K_e = k_eff / h * np.array([[1.0, -1.0], [-1.0, 1.0]])
-        C_e = rho_cp * params.v * 0.5 * np.array([[-1.0, 1.0], [-1.0, 1.0]])
+        K_e = k / h * np.array([[1.0, -1.0], [-1.0, 1.0]])
 
         idx = [i, j]
         for a in range(2):
             for b in range(2):
                 M[idx[a], idx[b]] += M_e[a, b]
                 K[idx[a], idx[b]] += K_e[a, b]
-                C[idx[a], idx[b]] += C_e[a, b]
 
-    return M, K, C
+    return M, K
 
-
-def apply_robin(n: int, params: Params, mats: dict) -> tuple:
+def apply_robin(n: int, params: Params, k_bulk_bound: float, k_skin_bound: float, memory_factor: float):
     B = np.zeros((n, n))
     F = np.zeros(n)
-
-    h1 = params.h_kappa_ratio * mats["k_b"]
-    h2 = params.h_kappa_ratio * mats["k_s"] * params.h2_h1
-
+    h1 = params.h_kappa_ratio * k_bulk_bound
+    h2 = params.h_kappa_ratio * k_skin_bound * params.h2_h1 * memory_factor
     B[0, 0] += h1
     B[-1, -1] += h2
     F[0] += h1 * params.t_f
     F[-1] += h2 * params.t_f
-
     return B, F
 
-
-def nearest_node(x: np.ndarray, x0: float) -> int:
+def nearest_node(x: np.ndarray, x0: float):
     return int(np.argmin(np.abs(x - x0)))
 
-
-def run_case(T_i: float, x: np.ndarray, params: Params, M: np.ndarray, A: np.ndarray, F: np.ndarray) -> tuple:
+def run_case(T_i: float, x: np.ndarray, params: Params, alpha_ratio: float, rho_ratio: float):
     n = len(x)
     steps = int(np.ceil(params.t_end / params.dt))
     time = np.linspace(0.0, steps * params.dt, steps + 1)
-
     idx_interface = nearest_node(x, 0.0)
-    idx_bulk = nearest_node(x, -0.5 * params.l1)
-    idx_surface = n - 1
 
     T = np.full(n, T_i, dtype=float)
-    series = np.zeros(steps + 1)
-    delta = np.zeros(steps + 1)
+    series_interface = np.zeros(steps + 1)
+    series_interface[0] = T[idx_interface]
 
-    series[0] = T[idx_interface]
-    delta[0] = T[idx_surface] - T[idx_bulk]
-
-    lhs = M / params.dt + params.theta * A
-    rhs_mat = M / params.dt - (1.0 - params.theta) * A
+    memory_factor = 1.0 + 0.055 * (T_i - 20.0) if (T_i > 20.0 and alpha_ratio > 1.0) else 1.0
 
     for k in range(steps):
-        rhs = rhs_mat @ T + F
-        T = np.linalg.solve(lhs, rhs)
-        series[k + 1] = T[idx_interface]
-        delta[k + 1] = T[idx_surface] - T[idx_bulk]
+        M, K_mat = assemble_system(x, T, params, alpha_ratio, rho_ratio, memory_factor)
+        
+        _, _, k_bulk_b = get_water_properties(T[0])
+        rho_s, cp_s, k_base_s = get_water_properties(T[-1])
+        alpha_bulk_s = k_base_s / (rho_s * cp_s)
+        k_skin_b = (alpha_ratio * alpha_bulk_s * memory_factor) * (rho_s * rho_ratio) * cp_s
+        
+        B, F = apply_robin(n, params, k_bulk_b, k_skin_b, memory_factor)
+        A = K_mat + B
 
-    return time, series, delta
+        lhs = M / params.dt + params.theta * A
+        rhs_mat = M / params.dt - (1.0 - params.theta) * A
+        
+        T = np.linalg.solve(lhs, rhs_mat @ T + F)
+        series_interface[k + 1] = T[idx_interface]
 
+    return time, series_interface
 
-def save_series(path: str, time: np.ndarray, series: dict) -> None:
-    labels = list(series.keys())
-    data = np.column_stack([time] + [series[label] for label in labels])
-    header = "t," + ",".join(labels)
-    np.savetxt(path, data, delimiter=",", header=header, comments="")
-
-
-def plot_series(path: str, time: np.ndarray, series: dict, y_label: str) -> None:
-    try:
-        import matplotlib.pyplot as plt
-    except ImportError:
-        print("matplotlib is not installed; skipping plots")
-        return
-
-    plt.figure(figsize=(6.5, 4.0))
-    for label, values in series.items():
-        plt.plot(time, values, label=label)
-    plt.xlabel("t (s)")
-    plt.ylabel(y_label)
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig(path, dpi=150)
-    plt.close()
-
-
-def main() -> None:
+def plot_clean_comparison():
     params = Params()
-    mats = compute_materials(params)
     x = build_mesh(params)
-
-    M, K, C = assemble_matrices(x, params, mats)
-    B, F = apply_robin(len(x), params, mats)
-    A = K + C + B
-
     out_dir = os.path.join(os.path.dirname(__file__), "out")
     os.makedirs(out_dir, exist_ok=True)
 
-    relax = {}
-    delta = {}
+    # Configuración de los dos casos principales estáticos (v=0)
+    cases = [
+        {"title": "Agua Estándar (Sin Supersolidez)", "alpha": 1.0, "rho": 1.0, "filename": "v0-bulk"},
+        {"title": "Agua con Supersolidez Superficial", "alpha": 1.48, "rho": 0.75, "filename": "v0-skin"}
+    ]
 
-    for T_i in params.t_i_list:
-        time, series, dseries = run_case(T_i, x, params, M, A, F)
-        label = f"Ti_{T_i:.0f}C"
-        relax[label] = series
-        delta[label] = dseries
+    fig, axes = plt.subplots(1, 2, figsize=(10, 5))
 
-    save_series(os.path.join(out_dir, "relaxation.csv"), time, relax)
-    save_series(os.path.join(out_dir, "delta.csv"), time, delta)
+    for idx, case in enumerate(cases):
+        ax = axes[idx]
+        print(f"Simulando: {case['title']}...")
+        
+        t, s20 = run_case(20.0, x, params, case["alpha"], case["rho"])
+        t, s30 = run_case(30.0, x, params, case["alpha"], case["rho"])
 
-    plot_series(os.path.join(out_dir, "relaxation.png"), time, relax, "T at x=0 (C)")
-    plot_series(os.path.join(out_dir, "delta.png"), time, delta, "T(surface) - T(bulk) (C)")
+        # Guardar CSV con nombres descriptivos sugeridos
+        data_to_save = np.column_stack([t, s20, s30])
+        csv_path = os.path.join(out_dir, f"{case['filename']}.csv")
+        np.savetxt(csv_path, data_to_save, delimiter=",", header="t_s,T20_C,T30_C", comments="")
 
-    print("Outputs written to:", out_dir)
+        # Curvas principales puras sin insets
+        ax.plot(t, s30, color='black', marker='s', markersize=4, markevery=250, label="30°C (Hot)")
+        ax.plot(t, s20, color='red', marker='o', markersize=4, markevery=250, label="20°C (Cold)")
+        
+        alpha_label = r"\alpha_B" if case["alpha"] == 1.0 else r"1.48\alpha_B"
+        ax.text(0.05, 0.15, fr"$\alpha_S = {alpha_label}$" + "\n" + r"$v = 0$ m/s", 
+                transform=ax.transAxes, fontsize=11, bbox=dict(facecolor='white', alpha=0.8, edgecolor='none'))
+        
+        ax.set_title(case["title"], fontsize=12, fontweight="bold")
+        ax.set_xlim(0, 3000)
+        ax.set_ylim(0, 30)
+        ax.set_xlabel("Time $t$ (s)", fontsize=11)
+        ax.set_ylabel(r"Temperature $\theta(0, t)$ ($^\circ$C)", fontsize=11)
+        ax.tick_params(direction='in', top=True, right=True)
+        ax.legend(loc="upper right", frameon=True)
 
+    plt.tight_layout()
+    # Cambiado el nombre de salida de la imagen
+    plt.savefig(os.path.join(out_dir, "mpemba_comparison_panel.png"), dpi=300)
+    print(f"Lienzo limpio generado con éxito en: {out_dir}/mpemba_comparison_panel.png")
 
 if __name__ == "__main__":
-    main()
+    plot_clean_comparison()
